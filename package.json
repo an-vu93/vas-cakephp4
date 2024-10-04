@@ -1,5 +1,11 @@
 {
-  "devDependencies": {
-    "tailwindcss": "^3.4.13"
-  }
+    "name": "value-analysis-system",
+    "version": "1.0.0",
+    "scripts": {
+        "build:css": "npx tailwindcss -i ./webroot/css/tailwind.css -o ./webroot/css/tailwind-built.css",
+        "watch:css": "npx tailwindcss -i ./webroot/css/tailwind.css -o ./webroot/css/tailwind-built.css --watch"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.13"
+    }
 }
