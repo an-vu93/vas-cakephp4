@@ -37,5 +37,8 @@ class AppView extends View
      */
     public function initialize(): void
     {
+        $this->Form->setTemplates([
+            'inputContainer' => '<div class="flex mb-5">{{content}}</div>',  // Custom wrapper template
+        ]);
     }
 }
