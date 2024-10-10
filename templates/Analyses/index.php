@@ -9,14 +9,13 @@ $this->assign('buttonLink', $this->Url->build([
 ?>
 
 <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
-    <?= $this->element('analysis_card') ?>
+    <?php 
+    foreach($analyses as $analysis) {
+        echo $this->element('analysis_card', ['record' => $analysis]);
+    }
+    ?>
+   
+    
     
 </div>
 

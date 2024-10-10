@@ -10,6 +10,13 @@ namespace App\Controller;
  */
 class AnalysesController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+
+        $this->loadModel('Indicators');
+    }
+
     /**
      * Index method
      *
@@ -17,9 +24,9 @@ class AnalysesController extends AppController
      */
     public function index()
     {
-        // $analyses = $this->paginate($this->Analyses);
+        $analyses = $this->paginate($this->Analyses);
 
-        // $this->set(compact('analyses'));
+        $this->set(compact('analyses'));
     }
 
     /**
@@ -45,17 +52,22 @@ class AnalysesController extends AppController
      */
     public function add()
     {
-        // $analysis = $this->Analyses->newEmptyEntity();
-        // if ($this->request->is('post')) {
-        //     $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData());
-        //     if ($this->Analyses->save($analysis)) {
-        //         $this->Flash->success(__('The analysis has been saved.'));
+        $analysis = $this->Analyses->newEmptyEntity();
+        if ($this->request->is('post')) {
+            $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData(), [
+                'associated' => ['IndicatorWeights']
+            ]);
 
-        //         return $this->redirect(['action' => 'index']);
-        //     }
-        //     $this->Flash->error(__('The analysis could not be saved. Please, try again.'));
-        // }
-        // $this->set(compact('analysis'));
+            if ($this->Analyses->save($analysis, ['associated' => ['IndicatorWeights']])) {
+                $this->Flash->success(__('The analysis has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The analysis could not be saved. Please, try again.'));
+        }
+        $indicators = $this->Indicators->find('list')->toArray();
+       
+        $this->set(compact('analysis', 'indicators'));
     }
 
     /**
@@ -68,18 +80,23 @@ class AnalysesController extends AppController
     public function edit($id = null)
     {
         $analysis = $this->Analyses->get($id, [
-            'contain' => [],
+            'contain' => ['IndicatorWeights'],
         ]);
+    //    dd($this->request->getData());
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData());
-            if ($this->Analyses->save($analysis)) {
+            $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData(), [
+                'associated' => ['IndicatorWeights']
+            ]);
+            if ($this->Analyses->save($analysis, ['associated' => ['IndicatorWeights']])) {
                 $this->Flash->success(__('The analysis has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The analysis could not be saved. Please, try again.'));
         }
-        $this->set(compact('analysis'));
+        $indicators = $this->Indicators->find('list')->toArray();
+       
+        $this->set(compact('analysis', 'indicators'));
     }
 
     /**

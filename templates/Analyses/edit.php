@@ -62,19 +62,21 @@ $this->assign('buttonLink', $this->Url->build([
                 </tr>
             </thead>
             <tbody class="bg-primary-50">
-                
+                <?php foreach($analysis->indicator_weights as $key => $indicator): ?>
                 <tr>
                     <th scope="row" class="px-4 py-2 border border-white">
-                        <?= $this->Form->select('indicator_weights.0.indicator_id', 
+                        <?= $this->Form->select("indicator_weights.{$key}.indicator_id", 
                             $indicators, 
                             ['class' => 'w-full p-2 border border-primary-300 bg-white rounded'
                         ]) ?>
                     </th>
                     <td class="px-4 py-2 text-center border border-white">
                     
-                        <?= $this->Form->select('indicator_weights.0.weight', 
+                        <?= $this->Form->select("indicator_weights.{$key}.weight", 
                             [1, 2, 3, 4, 5], 
-                            ['class' => 'w-full p-2 border border-primary-300 bg-white rounded'
+                            [
+                                'class' => 'w-full p-2 border border-primary-300 bg-white rounded',
+                                'value' => $indicator->weight
                         ]) ?>
                        
                     </td>
@@ -83,6 +85,7 @@ $this->assign('buttonLink', $this->Url->build([
                         <a class="delete-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white">削除</a>
                     </td>
                 </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
 
