@@ -40,5 +40,7 @@ class AppView extends View
         $this->Form->setTemplates([
             'inputContainer' => '<div class="flex mb-5">{{content}}</div>',  // Custom wrapper template
         ]);
+
+        $this->loadHelper('Paginator', ['templates' => 'custom_pagination_template']);
     }
 }
