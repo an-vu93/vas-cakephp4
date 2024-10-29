@@ -62,27 +62,37 @@ $this->assign('buttonLink', $this->Url->build([
                 </tr>
             </thead>
             <tbody class="bg-primary-50">
-                <?php foreach($analysis->indicator_weights as $key => $indicator): ?>
+                <?php foreach($analysis->indicator_weights as $key => $indicator_weight): ?>
                 <tr>
                     <th scope="row" class="px-4 py-2 border border-white">
+                        <?= $indicator_weight->id ?>
                         <?= $this->Form->select("indicator_weights.{$key}.indicator_id", 
                             $indicators, 
-                            ['class' => 'w-full p-2 border border-primary-300 bg-white rounded'
-                        ]) ?>
+                            ['class' => 'w-full p-2 border border-primary-300 bg-white rounded',]) 
+                        ?>
+                          <?= $this->Form->hidden("indicator_weights.{$key}.id", ['value' => $indicator_weight->id]) ?>
                     </th>
                     <td class="px-4 py-2 text-center border border-white">
                     
                         <?= $this->Form->select("indicator_weights.{$key}.weight", 
-                            [1, 2, 3, 4, 5], 
-                            [
-                                'class' => 'w-full p-2 border border-primary-300 bg-white rounded',
-                                'value' => $indicator->weight
-                        ]) ?>
+                            range(1, 5), 
+                            ['class' => 'w-full p-2 border border-primary-300 bg-white rounded',]) 
+                        ?>
                        
                     </td>
                     <td class="flex justify-evenly px-4 py-2 text-center border border-white">
                         <a class="add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white">追加</a>
-                        <a class="delete-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white">削除</a>
+                        <!-- Cakephp postLink helper does not generate the correct html for the 1st row when it is inside other form -->
+                        <?= $this->Form->postLink('Dummy', [], [ 'class' => 'hidden']) ?>
+                        <?= $this->Form->postLink(__('削除'), 
+                                ['controller' => 'IndicatorWeights', 'action' => 'delete', $indicator_weight->id],
+                                [
+                                    'confirm' => __('Are you sure you want to delete # {0}?', $indicator_weight->id),
+                                    'class' => 'delete-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white',
+                                    'id' => 'delete-' . $indicator_weight->id
+                                ])
+                            ?>
+
                     </td>
                 </tr>
                 <?php endforeach; ?>

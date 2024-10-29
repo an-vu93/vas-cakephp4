@@ -82,7 +82,6 @@ class AnalysesController extends AppController
         $analysis = $this->Analyses->get($id, [
             'contain' => ['IndicatorWeights'],
         ]);
-    //    dd($this->request->getData());
         if ($this->request->is(['patch', 'post', 'put'])) {
             $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData(), [
                 'associated' => ['IndicatorWeights']
