@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\IndicatorsController;
+use App\Controller\IndicatorWeightsController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Controller\IndicatorsController Test Case
+ * App\Controller\IndicatorWeightsController Test Case
  *
- * @uses \App\Controller\IndicatorsController
+ * @uses \App\Controller\IndicatorWeightsController
  */
-class IndicatorsControllerTest extends TestCase
+class IndicatorWeightsControllerTest extends TestCase
 {
     use IntegrationTestTrait;
 
@@ -22,16 +22,16 @@ class IndicatorsControllerTest extends TestCase
      * @var array<string>
      */
     protected $fixtures = [
-        'app.Indicators',
-        'app.CustomerScores',
         'app.IndicatorWeights',
+        'app.Analyses',
+        'app.Indicators',
     ];
 
     /**
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\IndicatorsController::index()
+     * @uses \App\Controller\IndicatorWeightsController::index()
      */
     public function testIndex(): void
     {
@@ -42,7 +42,7 @@ class IndicatorsControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\IndicatorsController::view()
+     * @uses \App\Controller\IndicatorWeightsController::view()
      */
     public function testView(): void
     {
@@ -53,7 +53,7 @@ class IndicatorsControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\IndicatorsController::add()
+     * @uses \App\Controller\IndicatorWeightsController::add()
      */
     public function testAdd(): void
     {
@@ -64,7 +64,7 @@ class IndicatorsControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\IndicatorsController::edit()
+     * @uses \App\Controller\IndicatorWeightsController::edit()
      */
     public function testEdit(): void
     {
@@ -75,7 +75,7 @@ class IndicatorsControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\IndicatorsController::delete()
+     * @uses \App\Controller\IndicatorWeightsController::delete()
      */
     public function testDelete(): void
     {

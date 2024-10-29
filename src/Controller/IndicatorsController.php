@@ -33,7 +33,7 @@ class IndicatorsController extends AppController
     public function view($id = null)
     {
         $indicator = $this->Indicators->get($id, [
-            'contain' => ['Analyses'],
+            'contain' => ['CustomerScores', 'IndicatorWeights'],
         ]);
 
         $this->set(compact('indicator'));
@@ -56,7 +56,6 @@ class IndicatorsController extends AppController
             }
             $this->Flash->error(__('The indicator could not be saved. Please, try again.'));
         }
-        
         $this->set(compact('indicator'));
     }
 
@@ -70,7 +69,7 @@ class IndicatorsController extends AppController
     public function edit($id = null)
     {
         $indicator = $this->Indicators->get($id, [
-            'contain' => ['Analyses'],
+            'contain' => [],
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $indicator = $this->Indicators->patchEntity($indicator, $this->request->getData());
@@ -81,8 +80,7 @@ class IndicatorsController extends AppController
             }
             $this->Flash->error(__('The indicator could not be saved. Please, try again.'));
         }
-        $analyses = $this->Indicators->Analyses->find('list', ['limit' => 200])->all();
-        $this->set(compact('indicator', 'analyses'));
+        $this->set(compact('indicator'));
     }
 
     /**

@@ -22,10 +22,8 @@ class CustomersFixture extends TestFixture
                 'id' => 1,
                 'name' => 'Lorem ipsum dolor sit amet',
                 'prefecture_id' => '',
-                'industry_id' => 'Lorem ipsum dolor sit amet',
-                'sub_industry_id' => 'Lorem ipsum dolor sit amet',
-                'created' => '2024-10-10 04:19:21',
-                'modified' => '2024-10-10 04:19:21',
+                'created' => '2024-10-15 05:27:18',
+                'modified' => '2024-10-15 05:27:18',
             ],
         ];
         parent::init();

@@ -47,6 +47,9 @@ class IndicatorsTable extends Table
 
         $this->addBehavior('Timestamp');
 
+        $this->hasMany('CustomerScores', [
+            'foreignKey' => 'indicator_id',
+        ]);
         $this->hasMany('IndicatorWeights', [
             'foreignKey' => 'indicator_id',
         ]);

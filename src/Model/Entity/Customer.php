@@ -11,9 +11,7 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property string $name
  * @property string|null $prefecture_id
- * @property string|resource|null $industry_id
- * @property string|resource|null $sub_industry_id
- * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\Prefecture $prefecture
@@ -37,8 +35,6 @@ class Customer extends Entity
     protected $_accessible = [
         'name' => true,
         'prefecture_id' => true,
-        'industry_id' => true,
-        'sub_industry_id' => true,
         'created' => true,
         'modified' => true,
         'prefecture' => true,
