@@ -7,10 +7,14 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\EventInterface;
+use Cake\Event\EventManager;
+use App\Service\ScoringService;
 
 /**
  * Indicators Model
  *
+ * @property \App\Model\Table\CustomerScoresTable&\Cake\ORM\Association\HasMany $CustomerScores
  * @property \App\Model\Table\IndicatorWeightsTable&\Cake\ORM\Association\HasMany $IndicatorWeights
  *
  * @method \App\Model\Entity\Indicator newEmptyEntity()
@@ -69,6 +73,59 @@ class IndicatorsTable extends Table
             ->requirePresence('name', 'create')
             ->notEmptyString('name');
 
+        $validator
+            ->scalar('query')
+            ->allowEmptyString('query');
+
+        $validator
+            ->integer('active')
+            ->notEmptyString('active');
+
+        $validator
+            ->integer('percentile_20')
+            ->notEmptyString('percentile_20');
+
+        $validator
+            ->integer('percentile_40')
+            ->notEmptyString('percentile_40');
+
+        $validator
+            ->integer('percentile_60')
+            ->notEmptyString('percentile_60');
+
+        $validator
+            ->integer('percentile_80')
+            ->notEmptyString('percentile_80');
+
         return $validator;
+    }
+
+    public function afterSave(EventInterface $event, $entity, $options)
+    {
+        // Skip if this is triggered by the scoring service itself
+        if (isset($options['skipScoring']) && $options['skipScoring'] === true) {
+            return;
+        }
+
+        // Only update scores if the indicator is active and relevant fields have changed
+        $relevantFields = ['query', 'active', 'percentile_20', 'percentile_40', 
+                          'percentile_60', 'percentile_80'];
+        
+        $shouldUpdateScores = $entity->active &&
+            ($entity->isNew() || array_intersect($relevantFields, $entity->getDirty()));
+        
+        if ($shouldUpdateScores) {
+            try {
+                $scoringService = new ScoringService();
+                $scoringService->updateScorePerIndicator($entity->id);
+               
+            } catch (\Exception $e) {
+                // Log the error but don't prevent the save
+                \Cake\Log\Log::error('Failed to update scores for indicator ' . $entity->id . ': ' . $e->getMessage());
+                
+                // Optionally, throw an exception if this is critical
+                throw new RuntimeException('Failed to update indicator scores: ' . $e->getMessage());
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@ $this->Form->setTemplates([
     <div class="p-6">
         <h2 class="text-2xl font-semibold mb-6">顧客検索</h2>
         <?= $this->Form->create(null, [
-            'type' => 'post',
+            'type' => 'get',
         ]) ?>
 
         <table class="w-full">
@@ -68,102 +68,117 @@ $this->Form->setTemplates([
 
 <section class="mx-auto bg-white shadow-md rounded-lg overflow-hidden">
     <?php if (!empty($searchData)): ?>
-        <h2 class="text-2xl font-semibold mb-6">検索結果</h2>
-        <?php if ($results->count() > 0): ?>
-            <?php foreach ($results as $customer): ?>
-                <div class="p-6">
-                    <table id="dynamicTable" class="table-auto w-full border border-white my-5">
-                        <thead class="bg-primary-500 text-white">
-                            <tr>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    顧客名
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    都道府県
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    営業の担当
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    最初の受注日
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    最近の受注日
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    OBライセンス数
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    OB以外ライセンス数
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    VU回数
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    お問い合わせの回数
-                                </th>
-                                <th scope="col" class="px-4 py-2 border border-white">
-                                    総合評価
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-primary-50">
-                        <tr>
-                                <td>
-                                    (<?= $customer->id ?>)<?= $customer->name ?>
-                                </td>
-                                <td>
-                                    <?= $customer->prefecture->name ?>
-                                </td>
-                                <td>
-                                <?= $customer->salesperson->name ?>
-                                </td>
-                                <td>
-                                    2015年9月9日
-                                </td>
-                                <td>
-                                    02024年7月9日
-                                </td>
-                                <td>
-                                    15
-                                </td>
-                                <td>
-                                    2
-                                </td>
-                                <td>
-                                    2
-                                </td>
-                                <td>
-                                    413
-                                </td>
-                                <td>
-                                    3.53
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            <div class="flex">
-                <h3><?= h($customer->name) ?> (ID: <?= $customer->id ?>)</h3>
-                <p>Email: <?= h($customer->email) ?></p>
-                <p>prefecture: <?= h($customer->prefecture->name) ?></p>
-        
-                <h4>Orders:</h4>
-                <?php if (!empty($customer->customer_orders)): ?>
-                    <ul>
-                    <?php foreach ($customer->customer_orders as $order): ?>
-                        <li>Order ID: <?= $order->id ?>, Date: <?= $order->order_date ?></li>
-                    <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p>No orders found for this customer.</p>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No results found.</p>
+    <h2 class="text-2xl font-semibold mb-6">検索結果</h2>
+
+    <div class="p-6">
+        <table id="dynamicTable" class="table-auto w-full border border-white my-5">
+            <thead class="bg-primary-500 text-white">
+                <tr>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        <?= $this->Paginator->sort('Customers.id', '顧客ID') ?> 
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        <?= $this->Paginator->sort('Customers.name', '顧客名') ?> 
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        <?= $this->Paginator->sort('Prefectures.id', '都道府県') ?> 
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        親業種
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        子業種 
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        最初の受注日
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        最近の受注日
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        OBライセンス数
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        OB以外ライセンス数
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        OBシリーズの受注回数
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        お問い合わせの着信回数
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        お問い合わせの送信回数
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        総合評価
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-primary-50">
+            <?php if ($results->count() > 0): ?>
+                <?php foreach ($results as $customer): ?>
+                    <tr>
+                        <td>
+                            <?= $customer->id ?>
+                        </td>
+                        <td>
+                            <?= $customer->name ?>
+                        </td>
+                        <td>
+                            <?= $customer->prefecture->name  ?? 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_orders[count($customer->customer_orders) - 1]->industry->name ?? 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_orders[count($customer->customer_orders) - 1]->sub_industry->name ?? 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_metric?->first_order_date?->i18nFormat('yyyy年MM月dd日') ?? 'N/A' ?>
+                        </td>
+                        <td>
+                        <?= $customer->customer_metric?->last_order_date?->i18nFormat('yyyy年MM月dd日') ?? 'N/A' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_metric->oricoh_license_count ?? '0' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_metric->other_license_count ?? '0' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_metric->order_count ?? '0' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_metric->in_contact_count ?? '0' ?>
+                        </td>
+                        <td>
+                            <?= $customer->customer_metric->out_contact_count ?? '0' ?>
+                        </td>
+                        <td>
+                            Todo
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No results found.</p>
+            <?php endif; ?>
+            </tbody>
+        </table>
+        <nav class="flex items-center -space-x-px h-8 text-sm">
+            <ul class="flex items-center">
+                <?= $this->Paginator->first('<< ' . __('最初')) ?>
+                <?= $this->Paginator->prev('< ' . __('前')) ?>
+                <?= $this->Paginator->numbers([
+                    'modulus' => 4,
+                ]) ?>
+                <?= $this->Paginator->next(__('次') . ' >') ?>
+                <?= $this->Paginator->last(__('最後') . ' >>') ?>
+            </ul>
+            <p><?= $this->Paginator->counter(__('ページ {{page}} / {{pages}}、合計 {{count}} 件中 {{current}} 件を表示')) ?></p>
+        </nav>
+    </div>
     <?php endif; ?>
-<?php endif; ?>
 </section>
 
 

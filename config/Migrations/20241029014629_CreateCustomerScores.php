@@ -38,6 +38,14 @@ class CreateCustomerScores extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
+        $table->addForeignKey('customer_id', 'customers', 'id', [
+            'delete' => 'CASCADE',
+            'update' => 'NO_ACTION'
+        ]);
+        $table->addForeignKey('indicator_id', 'indicators', 'id', [
+            'delete' => 'CASCADE',
+            'update' => 'NO_ACTION'
+        ]);
         $table->create();
     }
 }

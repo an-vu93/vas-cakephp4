@@ -12,8 +12,6 @@ use Cake\Validation\Validator;
  * Customers Model
  *
  * @property \App\Model\Table\PrefecturesTable&\Cake\ORM\Association\BelongsTo $Prefectures
- * @property \App\Model\Table\IndustriesTable&\Cake\ORM\Association\BelongsTo $Industries
- * @property \App\Model\Table\SubIndustriesTable&\Cake\ORM\Association\BelongsTo $SubIndustries
  * @property \App\Model\Table\CustomerContactsTable&\Cake\ORM\Association\HasMany $CustomerContacts
  * @property \App\Model\Table\CustomerOrdersTable&\Cake\ORM\Association\HasMany $CustomerOrders
  * @property \App\Model\Table\ProjectsTable&\Cake\ORM\Association\HasMany $Projects
@@ -55,13 +53,10 @@ class CustomersTable extends Table
         $this->belongsTo('Prefectures', [
             'foreignKey' => 'prefecture_id',
         ]);
-        $this->belongsTo('Industries', [
-            'foreignKey' => 'industry_id',
-        ]);
-        $this->belongsTo('SubIndustries', [
-            'foreignKey' => 'sub_industry_id',
-        ]);
         $this->hasMany('CustomerContacts', [
+            'foreignKey' => 'customer_id',
+        ]);
+        $this->hasOne('CustomerMetrics', [
             'foreignKey' => 'customer_id',
         ]);
         $this->hasMany('CustomerOrders', [
@@ -91,12 +86,6 @@ class CustomersTable extends Table
             ->maxLength('prefecture_id', 2)
             ->allowEmptyString('prefecture_id');
 
-        $validator
-            ->allowEmptyString('industry_id');
-
-        $validator
-            ->allowEmptyString('sub_industry_id');
-
         return $validator;
     }
 
@@ -110,8 +99,6 @@ class CustomersTable extends Table
     public function buildRules(RulesChecker $rules): RulesChecker
     {
         $rules->add($rules->existsIn('prefecture_id', 'Prefectures'), ['errorField' => 'prefecture_id']);
-        $rules->add($rules->existsIn('industry_id', 'Industries'), ['errorField' => 'industry_id']);
-        $rules->add($rules->existsIn('sub_industry_id', 'SubIndustries'), ['errorField' => 'sub_industry_id']);
 
         return $rules;
     }

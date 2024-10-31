@@ -13,6 +13,11 @@
                 <tr>
                     <th><?= $this->Paginator->sort('id') ?></th>
                     <th><?= $this->Paginator->sort('name') ?></th>
+                    <th><?= $this->Paginator->sort('active') ?></th>
+                    <th><?= $this->Paginator->sort('percentile_20') ?></th>
+                    <th><?= $this->Paginator->sort('percentile_40') ?></th>
+                    <th><?= $this->Paginator->sort('percentile_60') ?></th>
+                    <th><?= $this->Paginator->sort('percentile_80') ?></th>
                     <th><?= $this->Paginator->sort('created') ?></th>
                     <th><?= $this->Paginator->sort('modified') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
@@ -23,6 +28,11 @@
                 <tr>
                     <td><?= $this->Number->format($indicator->id) ?></td>
                     <td><?= h($indicator->name) ?></td>
+                    <td><?= $this->Number->format($indicator->active) ?></td>
+                    <td><?= $this->Number->format($indicator->percentile_20) ?></td>
+                    <td><?= $this->Number->format($indicator->percentile_40) ?></td>
+                    <td><?= $this->Number->format($indicator->percentile_60) ?></td>
+                    <td><?= $this->Number->format($indicator->percentile_80) ?></td>
                     <td><?= h($indicator->created) ?></td>
                     <td><?= h($indicator->modified) ?></td>
                     <td class="actions">

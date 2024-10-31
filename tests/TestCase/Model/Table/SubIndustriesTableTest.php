@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\IndicatorsTable;
+use App\Model\Table\SubIndustriesTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\IndicatorsTable Test Case
+ * App\Model\Table\SubIndustriesTable Test Case
  */
-class IndicatorsTableTest extends TestCase
+class SubIndustriesTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\IndicatorsTable
+     * @var \App\Model\Table\SubIndustriesTable
      */
-    protected $Indicators;
+    protected $SubIndustries;
 
     /**
      * Fixtures
@@ -24,9 +24,8 @@ class IndicatorsTableTest extends TestCase
      * @var array<string>
      */
     protected $fixtures = [
-        'app.Indicators',
-        'app.CustomerScores',
-        'app.IndicatorWeights',
+        'app.SubIndustries',
+        'app.CustomerOrders',
     ];
 
     /**
@@ -37,8 +36,8 @@ class IndicatorsTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Indicators') ? [] : ['className' => IndicatorsTable::class];
-        $this->Indicators = $this->getTableLocator()->get('Indicators', $config);
+        $config = $this->getTableLocator()->exists('SubIndustries') ? [] : ['className' => SubIndustriesTable::class];
+        $this->SubIndustries = $this->getTableLocator()->get('SubIndustries', $config);
     }
 
     /**
@@ -48,7 +47,7 @@ class IndicatorsTableTest extends TestCase
      */
     protected function tearDown(): void
     {
-        unset($this->Indicators);
+        unset($this->SubIndustries);
 
         parent::tearDown();
     }
@@ -57,7 +56,7 @@ class IndicatorsTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\IndicatorsTable::validationDefault()
+     * @uses \App\Model\Table\SubIndustriesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -65,12 +64,12 @@ class IndicatorsTableTest extends TestCase
     }
 
     /**
-     * Test afterSave method
+     * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\IndicatorsTable::afterSave()
+     * @uses \App\Model\Table\SubIndustriesTable::buildRules()
      */
-    public function testAfterSave(): void
+    public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

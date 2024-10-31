@@ -10,11 +10,15 @@ namespace App\Controller;
  */
 class SearchController extends AppController
 {
+    // public $paginate = [
+    //     'sortWhitelist' => [
+    //         'id', 'name', 'Customers'
+    //     ]
+    // ];
     public function initialize(): void
     {
         parent::initialize();
 
-        // $this->loadModel('Indicators');
         $this->viewBuilder()->setLayout('search');
     }
 
@@ -27,37 +31,60 @@ class SearchController extends AppController
     {
         $results = [];
         $searchData = [];
-
-        if ($this->request->is('post')) {
-            $searchData = $this->request->getData();
+        $searchData = $this->request->getQuery();
          
-            $customersTable = $this->fetchTable('Customers');
-    
-            $query = $customersTable->find()
-                ->contain(['CustomerOrders', 'Prefectures', 'Staffs']);
+        $customersTable = $this->fetchTable('Customers');
 
-            if (!empty($searchData['query'])) {
+        $query = $customersTable->find()
+            ->contain([
+                'CustomerOrders' => [
+                    'ProductTypes',
+                    'Industries',
+                    'SubIndustries',
+                ],
+                'Prefectures', 
+                'CustomerMetrics',
+        ]);
+
+       
+        if (!empty($searchData['query'])) {
+            if (is_numeric($searchData['query'])) {
+                $query->where(['Customers.id' => $searchData['query']]);
+            } else {
                 $query->where([
-                    'OR' => [
-                        'Customers.name LIKE' => '%' . $searchData['query'] . '%',
-                        // 'Customers.id' => $searchData['query']
-                    ]
+                    'Customers.name LIKE' => '%' . $searchData['query'] . '%',
                 ]);
             }
-
-            if (!empty($searchData['prefecture'])) {
-                $query->where(['Customers.prefecture_id' => $searchData['prefecture']]);
-            }
-
-
-            $results = $query->all();
         }
-        
+
+        if (!empty($searchData['prefecture_id'])) {
+            $query->where(['Customers.prefecture_id' => $searchData['prefecture_id']]);
+        }
+
+        $this->paginate = [
+            'contain' => [
+                'Prefectures', 
+                'CustomerOrders' => [
+                    'ProductTypes',
+                    'Industries',
+                    'SubIndustries',
+                ],
+            ],
+            'sortWhitelist' => [
+                'Customers.id',
+                'Customers.name',
+                'Prefectures.id',
+                'CustomerOrders.industry_id',
+                'CustomerOrders.sub_ndustry_id',
+            ],
+        ]; 
+
+        $results = $this->paginate($query, ['limit' => 20]);
+                
         $prefectures = $this->fetchTable('Prefectures')->find('list', [
             'keyField' => 'id',
             'valueField' => 'name'
         ])->toArray();
-
         
         $salespeople = $this->fetchTable('Staffs')->find('list', [
             'keyField' => 'id',

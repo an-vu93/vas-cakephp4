@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\ScoringService;
+
 /**
  * Indicators Controller
  *
@@ -102,4 +104,33 @@ class IndicatorsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    public function calculate($id)
+    {
+        $service = new ScoringService();
+
+        try {
+            $results = $service->getPercentiles($id);
+
+            if ($results) {
+                $this->response = $this->response
+                    ->withStatus(200, 'OK')
+                    ->withType('application/json')
+                    ->withStringBody(json_encode(['success' => true, 'data' => $results]));
+            } else {
+                $this->response = $this->response
+                    ->withStatus(400)
+                    ->withType('application/json')
+                    ->withStringBody(json_encode(['success' => false, 'message' => 'Failed to calculate metric scores.']));
+            }
+        } catch (\Exception $e) {
+            $this->response = $this->response
+                ->withStatus(500)
+                ->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => $e->getMessage()]));
+        }
+
+        return $this->response;
+    }
+
 }

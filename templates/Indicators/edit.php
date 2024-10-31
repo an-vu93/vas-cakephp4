@@ -2,7 +2,6 @@
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Indicator $indicator
- * @var string[]|\Cake\Collection\CollectionInterface $analyses
  */
 ?>
 <div class="row">
@@ -24,6 +23,12 @@
                 <legend><?= __('Edit Indicator') ?></legend>
                 <?php
                     echo $this->Form->control('name');
+                    echo $this->Form->control('query');
+                    echo $this->Form->control('active');
+                    echo $this->Form->control('percentile_20');
+                    echo $this->Form->control('percentile_40');
+                    echo $this->Form->control('percentile_60');
+                    echo $this->Form->control('percentile_80');
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

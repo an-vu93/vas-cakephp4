@@ -61,6 +61,10 @@ class CreateCustomerMetrics extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
+        $table->addForeignKey('customer_id', 'customers', 'id', [
+            'delete' => 'CASCADE',
+            'update' => 'NO_ACTION'
+        ]);
         $table->create();
     }
 }
