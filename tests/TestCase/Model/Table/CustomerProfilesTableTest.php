@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\CustomersTable;
+use App\Model\Table\CustomerProfilesTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\CustomersTable Test Case
+ * App\Model\Table\CustomerProfilesTable Test Case
  */
-class CustomersTableTest extends TestCase
+class CustomerProfilesTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\CustomersTable
+     * @var \App\Model\Table\CustomerProfilesTable
      */
-    protected $Customers;
+    protected $CustomerProfiles;
 
     /**
      * Fixtures
@@ -24,12 +24,9 @@ class CustomersTableTest extends TestCase
      * @var array<string>
      */
     protected $fixtures = [
+        'app.CustomerProfiles',
         'app.Customers',
         'app.Prefectures',
-        'app.CustomerContacts',
-        'app.CustomerMetrics',
-        'app.CustomerOrders',
-        'app.Projects',
     ];
 
     /**
@@ -40,8 +37,8 @@ class CustomersTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Customers') ? [] : ['className' => CustomersTable::class];
-        $this->Customers = $this->getTableLocator()->get('Customers', $config);
+        $config = $this->getTableLocator()->exists('CustomerProfiles') ? [] : ['className' => CustomerProfilesTable::class];
+        $this->CustomerProfiles = $this->getTableLocator()->get('CustomerProfiles', $config);
     }
 
     /**
@@ -51,7 +48,7 @@ class CustomersTableTest extends TestCase
      */
     protected function tearDown(): void
     {
-        unset($this->Customers);
+        unset($this->CustomerProfiles);
 
         parent::tearDown();
     }
@@ -60,7 +57,7 @@ class CustomersTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\CustomersTable::validationDefault()
+     * @uses \App\Model\Table\CustomerProfilesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -71,7 +68,7 @@ class CustomersTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\CustomersTable::buildRules()
+     * @uses \App\Model\Table\CustomerProfilesTable::buildRules()
      */
     public function testBuildRules(): void
     {

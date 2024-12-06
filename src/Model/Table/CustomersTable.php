@@ -13,6 +13,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\PrefecturesTable&\Cake\ORM\Association\BelongsTo $Prefectures
  * @property \App\Model\Table\CustomerContactsTable&\Cake\ORM\Association\HasMany $CustomerContacts
+ * @property \App\Model\Table\CustomerMetricsTable&\Cake\ORM\Association\HasMany $CustomerMetrics
  * @property \App\Model\Table\CustomerOrdersTable&\Cake\ORM\Association\HasMany $CustomerOrders
  * @property \App\Model\Table\ProjectsTable&\Cake\ORM\Association\HasMany $Projects
  *
@@ -62,7 +63,13 @@ class CustomersTable extends Table
         $this->hasMany('CustomerOrders', [
             'foreignKey' => 'customer_id',
         ]);
+        $this->hasMany('CustomerScores', [
+            'foreignKey' => 'customer_id',
+        ]);
         $this->hasMany('Projects', [
+            'foreignKey' => 'customer_id',
+        ]);
+        $this->hasOne('CustomerProfiles', [
             'foreignKey' => 'customer_id',
         ]);
     }
@@ -82,8 +89,7 @@ class CustomersTable extends Table
             ->notEmptyString('name');
 
         $validator
-            ->scalar('prefecture_id')
-            ->maxLength('prefecture_id', 2)
+            ->integer('prefecture_id')
             ->allowEmptyString('prefecture_id');
 
         return $validator;

@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\CustomersTable;
+use App\Model\Table\OricohSeriesTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\CustomersTable Test Case
+ * App\Model\Table\OricohSeriesTable Test Case
  */
-class CustomersTableTest extends TestCase
+class OricohSeriesTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\CustomersTable
+     * @var \App\Model\Table\OricohSeriesTable
      */
-    protected $Customers;
+    protected $OricohSeries;
 
     /**
      * Fixtures
@@ -24,12 +24,8 @@ class CustomersTableTest extends TestCase
      * @var array<string>
      */
     protected $fixtures = [
-        'app.Customers',
-        'app.Prefectures',
-        'app.CustomerContacts',
-        'app.CustomerMetrics',
-        'app.CustomerOrders',
-        'app.Projects',
+        'app.OricohSeries',
+        'app.ProductTypes',
     ];
 
     /**
@@ -40,8 +36,8 @@ class CustomersTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Customers') ? [] : ['className' => CustomersTable::class];
-        $this->Customers = $this->getTableLocator()->get('Customers', $config);
+        $config = $this->getTableLocator()->exists('OricohSeries') ? [] : ['className' => OricohSeriesTable::class];
+        $this->OricohSeries = $this->getTableLocator()->get('OricohSeries', $config);
     }
 
     /**
@@ -51,7 +47,7 @@ class CustomersTableTest extends TestCase
      */
     protected function tearDown(): void
     {
-        unset($this->Customers);
+        unset($this->OricohSeries);
 
         parent::tearDown();
     }
@@ -60,7 +56,7 @@ class CustomersTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\CustomersTable::validationDefault()
+     * @uses \App\Model\Table\OricohSeriesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -71,7 +67,7 @@ class CustomersTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\CustomersTable::buildRules()
+     * @uses \App\Model\Table\OricohSeriesTable::buildRules()
      */
     public function testBuildRules(): void
     {

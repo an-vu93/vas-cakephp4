@@ -54,6 +54,9 @@ class SubIndustriesTable extends Table
         $this->hasMany('CustomerOrders', [
             'foreignKey' => 'sub_industry_id',
         ]);
+        $this->hasMany('CustomerProfiles', [
+            'foreignKey' => 'sub_industry_id',
+        ]);
     }
 
     /**

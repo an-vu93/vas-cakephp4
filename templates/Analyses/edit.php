@@ -65,7 +65,6 @@ $this->assign('buttonLink', $this->Url->build([
                 <?php foreach($analysis->indicator_weights as $key => $indicator_weight): ?>
                 <tr>
                     <th scope="row" class="px-4 py-2 border border-white">
-                        <?= $indicator_weight->id ?>
                         <?= $this->Form->select("indicator_weights.{$key}.indicator_id", 
                             $indicators, 
                             ['class' => 'w-full p-2 border border-primary-300 bg-white rounded',]) 
@@ -75,7 +74,7 @@ $this->assign('buttonLink', $this->Url->build([
                     <td class="px-4 py-2 text-center border border-white">
                     
                         <?= $this->Form->select("indicator_weights.{$key}.weight", 
-                            range(1, 5), 
+                            [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5], 
                             ['class' => 'w-full p-2 border border-primary-300 bg-white rounded',]) 
                         ?>
                        

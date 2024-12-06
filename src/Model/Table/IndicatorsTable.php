@@ -123,7 +123,6 @@ class IndicatorsTable extends Table
                 // Log the error but don't prevent the save
                 \Cake\Log\Log::error('Failed to update scores for indicator ' . $entity->id . ': ' . $e->getMessage());
                 
-                // Optionally, throw an exception if this is critical
                 throw new RuntimeException('Failed to update indicator scores: ' . $e->getMessage());
             }
         }

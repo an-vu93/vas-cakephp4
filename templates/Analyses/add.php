@@ -73,7 +73,7 @@ $this->assign('buttonLink', $this->Url->build([
                     <td class="px-4 py-2 text-center border border-white">
                     
                         <?= $this->Form->select('indicator_weights.0.weight', 
-                            [1, 2, 3, 4, 5], 
+                            [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5], 
                             ['class' => 'w-full p-2 border border-primary-300 bg-white rounded'
                         ]) ?>
                        
