@@ -175,9 +175,9 @@ $this->Form->setTemplates([
 
 <section class="mx-auto bg-white shadow-md rounded-lg overflow-hidden">
     <?php if (!empty($requestParams)): ?>
-    <h2 class="text-2xl font-semibold mb-6">検索結果</h2>
-
-    <div class="p-6">
+    <div class= "p-6">
+        <h2 class="text-2xl font-semibold mb-6">検索結果</h2>
+        <?= $this->element('pagination') ?>
         <table id="dynamicTable" class="table-auto w-full border border-white my-5">
             <thead class="bg-primary-500 text-white">
                 <tr>
@@ -310,18 +310,7 @@ $this->Form->setTemplates([
             <?php endif; ?>
             </tbody>
         </table>
-        <nav class="flex items-center -space-x-px h-8 text-sm">
-            <ul class="flex items-center">
-                <?= $this->Paginator->first('<< ' . __('最初')) ?>
-                <?= $this->Paginator->prev('< ' . __('前')) ?>
-                <?= $this->Paginator->numbers([
-                    'modulus' => 4,
-                ]) ?>
-                <?= $this->Paginator->next(__('次') . ' >') ?>
-                <?= $this->Paginator->last(__('最後') . ' >>') ?>
-            </ul>
-            <p><?= $this->Paginator->counter(__('ページ {{page}} / {{pages}}、合計 {{count}} 件中 {{current}} 件を表示')) ?></p>
-        </nav>
+        <?= $this->element('pagination') ?>
     </div>
     <?php endif; ?>
 </section>

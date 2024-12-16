@@ -1,58 +1,80 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var iterable<\App\Model\Entity\Indicator> $indicators
- */
+<?php 
+$this->extend('/element/container');
+
+$this->assign('title', 'ツール一覧');
+$this->assign('buttonLink', $this->Url->build([
+    'controller' => 'Indicators',
+    'action' => 'add',
+]))
 ?>
-<div class="indicators index content">
-    <?= $this->Html->link(__('New Indicator'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Indicators') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('name') ?></th>
-                    <th><?= $this->Paginator->sort('active') ?></th>
-                    <th><?= $this->Paginator->sort('percentile_20') ?></th>
-                    <th><?= $this->Paginator->sort('percentile_40') ?></th>
-                    <th><?= $this->Paginator->sort('percentile_60') ?></th>
-                    <th><?= $this->Paginator->sort('percentile_80') ?></th>
-                    <th><?= $this->Paginator->sort('created') ?></th>
-                    <th><?= $this->Paginator->sort('modified') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($indicators as $indicator): ?>
-                <tr>
-                    <td><?= $this->Number->format($indicator->id) ?></td>
-                    <td><?= h($indicator->name) ?></td>
-                    <td><?= $this->Number->format($indicator->active) ?></td>
-                    <td><?= $this->Number->format($indicator->percentile_20) ?></td>
-                    <td><?= $this->Number->format($indicator->percentile_40) ?></td>
-                    <td><?= $this->Number->format($indicator->percentile_60) ?></td>
-                    <td><?= $this->Number->format($indicator->percentile_80) ?></td>
-                    <td><?= h($indicator->created) ?></td>
-                    <td><?= h($indicator->modified) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $indicator->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $indicator->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $indicator->id], ['confirm' => __('Are you sure you want to delete # {0}?', $indicator->id)]) ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
-    </div>
+
+<div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+
+    <table id="dynamicTable" class="table-auto w-full border border-white mt-10 mb-5">
+        <thead class="bg-primary-500 text-white">
+            <tr>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    ID
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    指標名
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    有効
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    境界１
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    境界２
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    境界３
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    境界４
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    作成日
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    編集日
+                </th>
+                <th scope="col" class="px-4 py-2 border border-white">
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody class="bg-primary-50">
+        <?php foreach ($indicators as $indicator): ?>
+            <tr>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->id) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= h($indicator->name) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->active) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_20) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_40) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_60) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_80) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= h($indicator->created) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= h($indicator->modified) ?></td>
+                <td class="flex justify-evenly px-4 py-2 text-center border border-white">
+                    <?= $this->Html->link(__('編集'), 
+                        ['action' => 'edit', $indicator->id],
+                        ['class' => 'add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
+                    ) ?>
+                    <?= $this->Form->postLink(__('削除'), 
+                        ['action' => 'delete', $indicator->id], 
+                        [   
+                            'class' => 'add-row w-2/5 px-2 py-2 bg-red-500 text-white border border-red-700 text-red-500 rounded hover:bg-red-700 hover:text-white',
+                            'confirm' => __('「 {0} 」の指標を削除しますか?', $indicator->name)
+                        ]
+                    )?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            
+        </tbody>
+    </table>
+
+    <?= $this->element('pagination') ?>
 </div>
