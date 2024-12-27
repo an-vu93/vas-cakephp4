@@ -20,6 +20,8 @@ class IndicatorsController extends AppController
      */
     public function index()
     {
+        $indicator = $this->Indicators->newEmptyEntity();
+        $this->Authorization->authorize($indicator);
         $indicators = $this->paginate($this->Indicators);
 
         $this->set(compact('indicators'));
@@ -49,6 +51,7 @@ class IndicatorsController extends AppController
     public function add()
     {
         $indicator = $this->Indicators->newEmptyEntity();
+        $this->Authorization->authorize($indicator);
         if ($this->request->is('post')) {
             $indicator = $this->Indicators->patchEntity($indicator, $this->request->getData());
             if ($this->Indicators->save($indicator)) {
@@ -73,6 +76,7 @@ class IndicatorsController extends AppController
         $indicator = $this->Indicators->get($id, [
             'contain' => [],
         ]);
+        $this->Authorization->authorize($indicator);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $indicator = $this->Indicators->patchEntity($indicator, $this->request->getData());
             if ($this->Indicators->save($indicator)) {
@@ -96,10 +100,11 @@ class IndicatorsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $indicator = $this->Indicators->get($id);
+        $this->Authorization->authorize($indicator);
         if ($this->Indicators->delete($indicator)) {
-            $this->Flash->success(__('The indicator has been deleted.'));
+            $this->Flash->success(__('指標が削除されました。'));
         } else {
-            $this->Flash->error(__('The indicator could not be deleted. Please, try again.'));
+            $this->Flash->error(__('指標が削除出来ませんでした。もう一度お試しください。'));
         }
 
         return $this->redirect(['action' => 'index']);

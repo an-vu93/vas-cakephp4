@@ -13,7 +13,7 @@
             </a>
             <div class="flex items-center lg:order-2">
                 <?php if (!($currentController === 'Users' && $currentAction === 'login')): ?>
-                    <?php if(true): ?>
+                    <?php if($authUser['user_role'] !== 'general'): ?>
                         <a 
                             href="<?= $this->Url->build([
                                 'controller' => 'analyses',
@@ -22,7 +22,7 @@
                             class="text-white font-medium rounded-lg hover:bg-blue-500 text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2">管理画面へ
                         </a>
                     <?php endif; ?>
-                        <a href="#" class="text-white font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2">(<?= $loggedInUser->staff_no ?>) <?= $loggedInUser->name ?></a>
+                        <a href="#" class="text-white font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2">(<?= $authUser->staff_no ?>) <?= $authUser->name ?></a>
                         <?= $this->Form->postLink(
                             'ログアウト',
                             ['controller' => 'Users', 'action' => 'logout'],

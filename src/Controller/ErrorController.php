@@ -16,7 +16,9 @@ declare(strict_types=1);
  */
 namespace App\Controller;
 
+use Cake\Routing\Router;
 use Cake\Event\EventInterface;
+// use Authorization\Controller\Component\AuthorizationComponent;
 
 /**
  * Error Handling Controller
@@ -33,6 +35,7 @@ class ErrorController extends AppController
     public function initialize(): void
     {
         $this->loadComponent('RequestHandler');
+        $this->loadComponent('Authorization.Authorization');
     }
 
     /**
@@ -66,5 +69,11 @@ class ErrorController extends AppController
      */
     public function afterFilter(EventInterface $event)
     {
+    }
+
+    public function error403()
+    {
+        $this->Authorization->skipAuthorization();
+        $this->viewBuilder()->setLayout('error');
     }
 }

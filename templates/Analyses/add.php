@@ -82,6 +82,7 @@ $this->assign('buttonLink', $this->Url->build([
                         <a class="add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white">追加</a>
                         <a class="delete-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white">削除</a>
                     </td>
+                    <?= $this->Form->hidden('author_id', ['value' => $authUser->staff_no]); ?>
                 </tr>
             </tbody>
         </table>

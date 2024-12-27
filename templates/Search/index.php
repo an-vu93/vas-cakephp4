@@ -249,7 +249,11 @@ $this->Form->setTemplates([
                             <?= $customer->id ?>
                         </td>
                         <td>
-                            <?= $customer->name ?>
+                            <a 
+                                href="<?= $customer->customer_profile->homepage ?? '#' ?>" 
+                                class="<?= $customer->customer_profile->homepage ? 'inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline' : '' ?>">
+                                    <?= $customer->name ?>
+                            </a>
                         </td>
                         <td>
                             <?= $customer->prefecture->name  ?? 'N/A' ?>
@@ -263,10 +267,10 @@ $this->Form->setTemplates([
                             <?= $customer->customer_profile->employee_number ?? 'N/A' ?>
                         </td>
                         <td>
-                            <?= $customer->customer_profile->capital ?? 'N/A' ?>
+                            <?= $customer->customer_profile->capital ? $this->Number->format($customer->customer_profile->capital) : 'N/A' ?>
                         </td>
                         <td>
-                        <?= $customer->customer_profile->revenue ?? 'N/A' ?>
+                            <?= $customer->customer_profile->revenue ? $this->Number->format($customer->customer_profile->revenue) : 'N/A' ?>
                         </td>
                         <td>
                             <?= $customer->customer_profile->industry->name ?? 'N/A' ?>

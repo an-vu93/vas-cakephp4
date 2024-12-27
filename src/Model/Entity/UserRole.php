@@ -6,19 +6,14 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Analysis Entity
+ * UserRole Entity
  *
  * @property int $id
- * @property string $name
- * @property string $description
- * @property int $public_flg
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
- * @property int $author_id
- *
- * @property \App\Model\Entity\IndicatorWeight[] $indicator_weights
+ * @property int $employee_number
+ * @property string $email
+ * @property string $role
  */
-class Analysis extends Entity
+class UserRole extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -30,12 +25,8 @@ class Analysis extends Entity
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'name' => true,
-        'description' => true,
-        'public_flg' => true,
-        'created' => true,
-        'modified' => true,
-        'author_id' => true,
-        'indicator_weights' => true,
+        'employee_number' => true,
+        'email' => true,
+        'role' => true,
     ];
 }

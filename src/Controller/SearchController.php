@@ -29,6 +29,8 @@ class SearchController extends AppController
      */
     public function index()
     {
+        $this->Authorization->skipAuthorization();
+        
         $customer = [];
         $requestParams = [];
         $requestParams = $this->request->getQuery();

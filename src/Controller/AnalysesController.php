@@ -23,9 +23,11 @@ class AnalysesController extends AppController
      * @return \Cake\Http\Response|null|void Renders view
      */
     public function index()
-    {
+    {   
+        $analysis = $this->Analyses->newEmptyEntity();
+        $this->Authorization->authorize($analysis);
         $analyses = $this->paginate($this->Analyses);
-
+        
         $this->set(compact('analyses'));
     }
 
@@ -41,7 +43,7 @@ class AnalysesController extends AppController
         $analysis = $this->Analyses->get($id, [
             'contain' => [],
         ]);
-
+        $this->Authorization->authorize($analysis);
         $this->set(compact('analysis'));
     }
 
@@ -53,6 +55,7 @@ class AnalysesController extends AppController
     public function add()
     {
         $analysis = $this->Analyses->newEmptyEntity();
+        $this->Authorization->authorize($analysis);
         if ($this->request->is('post')) {
             $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData(), [
                 'associated' => ['IndicatorWeights']
@@ -82,6 +85,7 @@ class AnalysesController extends AppController
         $analysis = $this->Analyses->get($id, [
             'contain' => ['IndicatorWeights'],
         ]);
+        $this->Authorization->authorize($analysis);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $analysis = $this->Analyses->patchEntity($analysis, $this->request->getData(), [
                 'associated' => ['IndicatorWeights']
@@ -109,10 +113,11 @@ class AnalysesController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $analysis = $this->Analyses->get($id);
+        $this->Authorization->authorize($analysis);
         if ($this->Analyses->delete($analysis)) {
-            $this->Flash->success(__('The analysis has been deleted.'));
+            $this->Flash->success(__('解析ツールが削除されました。'));
         } else {
-            $this->Flash->error(__('The analysis could not be deleted. Please, try again.'));
+            $this->Flash->error(__('解析ツールが削除出来ませんでした。もう一度お試しください。'));
         }
 
         return $this->redirect(['action' => 'index']);

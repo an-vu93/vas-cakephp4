@@ -75,6 +75,11 @@ class AnalysesTable extends Table
             ->integer('public_flg')
             ->notEmptyString('public_flg');
 
+        $validator
+            ->integer('author_id')
+            ->requirePresence('author_id', 'create')
+            ->notEmptyString('author_id');
+
         return $validator;
     }
 }
