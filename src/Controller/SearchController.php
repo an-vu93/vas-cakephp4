@@ -151,12 +151,12 @@ class SearchController extends AppController
             }
         }
 
-        $dataSourceRef = '複数の外部データソースから取得され、統合された情報になります。<br>参照先（順番なし）：<br>・ハローワークインターネットサービス';
+        $dataSourceRef = '複数の外部データソースから取得され、統合された情報になります。<br>参照先（順番なし）：<br>・ハローワークインターネットサービス<br>・企業のホームページ<br>・gBizINFO';
         
         $this->set(compact('customers', 'requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'customerScores', 'indicators', 'dataSourceRef'));
     }
 
-    private function calculateWeightedAverage(array $scores, array $indicators): ?float 
+    private function calculateWeightedAverage(array $scores, array $indicators): ? float 
     {
         if (empty($scores) || empty($indicators)) {
             return null;
