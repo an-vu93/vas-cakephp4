@@ -12,6 +12,13 @@ use Authentication\Identity;
  */
 class UsersController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+
+        $this->loadComponent('ActivityLog');
+    }
+
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
@@ -46,6 +53,8 @@ class UsersController extends AppController
                 'action' => 'index',
             ]);
 
+            $this->ActivityLog->logActivity('ログイン', 'ログイン');
+
             return $this->redirect($redirect);
         }
         // display error if user submitted and authentication failed
@@ -65,6 +74,8 @@ class UsersController extends AppController
             $this->Authentication->logout();
             return $this->redirect(['controller' => 'Users', 'action' => 'login']);
         }
+
+        $this->ActivityLog->logActivity('ログアウト', 'ログアウト');
     }
 
     public function checkRole($employeeNumber, $loginId)

@@ -18,6 +18,7 @@ class SearchController extends AppController
     {
         parent::initialize();
 
+        $this->loadComponent('ActivityLog');
         $this->viewBuilder()->setLayout('search');
         $this->customerQueryService = new CustomerQueryService();
     }
@@ -34,7 +35,12 @@ class SearchController extends AppController
         $customer = [];
         $requestParams = [];
         $requestParams = $this->request->getQuery();
-         
+        
+        $userActivityType = isset($requestParams['page']) ? 'ブラウジング' : '新検索';
+        if (isset($requestParams['analysis_id'])) {
+            $this->ActivityLog->logActivity($userActivityType, '以下の条件で検索が行われた: ' . json_encode($requestParams));
+        }
+        
         $prefecturesTable = $this->fetchTable('Prefectures');
         $staffTable = $this->fetchTable('Staffs');
         $industriesTable = $this->fetchTable('Industries');
@@ -189,12 +195,16 @@ class SearchController extends AppController
 
     public function export() 
     {
+        $this->Authorization->skipAuthorization();
         $this->autoRender = false;
         $response = $this->response;
         
         // Get query parameters
         $requestParams = $this->request->getQuery();
         
+        $this->ActivityLog->logActivity('ファイル出力', '以下の条件で情報抽出が行われた: ' . json_encode($requestParams));
+        
+    
         // Initialize tables
         $customersTable = $this->fetchTable('Customers');
         
