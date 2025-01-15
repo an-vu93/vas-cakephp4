@@ -112,6 +112,7 @@ class IndicatorsController extends AppController
 
     public function calculate($id)
     {
+        $this->Authorization->skipAuthorization();
         $service = new ScoringService();
 
         try {

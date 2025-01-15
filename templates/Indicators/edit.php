@@ -61,6 +61,9 @@ $this->assign('buttonLink', $this->Url->build([
                     <th scope="col" class="px-4 py-2 border border-white">
                         境界４
                     </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        操作
+                    </th>
                 </tr>
             </thead>
             <tbody class="bg-primary-50">
@@ -93,6 +96,19 @@ $this->assign('buttonLink', $this->Url->build([
                             'label' => false
                         ]) ?>
                     </td>
+                    <td scope="row" class="px-8 py-2 border border-white">
+                        <a 
+                            href="#" 
+                            class="p-2"
+                            id="calculate-indicator-btn" 
+                            data-url="<?= $this->Url->build([
+                                'controller' => 'Indicators',
+                                'action' => 'calculate',
+                                $indicator->id
+                            ])?>"
+                        >
+                            参考値</a>
+                    </td>
                  
                     
                     
@@ -104,4 +120,38 @@ $this->assign('buttonLink', $this->Url->build([
     <?= $this->Form->end() ?>
 </div>
 
-</div>
+
+<script>
+    document.getElementById('calculate-indicator-btn').addEventListener('click', async function () {
+    const url = this.getAttribute('data-url');
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const json = await response.json();
+        console.log(json)
+        if (json.success && json.data) {
+            // Populate input fields with the corresponding data
+            for (const key in json.data) {
+                const input = document.querySelector(`input[name="${key}"]`);
+                if (input) {
+                    input.value = json.data[key];
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching indicator data:', error);
+       
+    }
+});
+
+</script>
