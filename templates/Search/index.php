@@ -182,60 +182,61 @@ $this->Form->setTemplates([
             <thead class="bg-primary-500 text-white">
                 <tr>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        <?= $this->Paginator->sort('Customers.id', '顧客ID') ?> 
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'Customers.id',
+                            'sortText' => '顧客ID',
+                        ]); ?>
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        <?= $this->Paginator->sort('Customers.name', '顧客名') ?> 
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'Customers.name',
+                            'sortText' => '顧客名',
+                        ]); ?>
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        <?= $this->Paginator->sort('Prefectures.id', '都道府県') ?> 
+                        求人確認
+                    </th>
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'Prefectures.id',
+                            'sortText' => '都道府県',
+                        ]); ?>
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
                         最新のOB版
 
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        従業員数 
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'CustomerProfiles.employee_number',
+                            'sortText' => '従業員数',
+                        ]); ?>
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        資本金
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'CustomerProfiles.capital',
+                            'sortText' => '資本金',
+                        ]); ?>
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        年商
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'CustomerProfiles.revenue',
+                            'sortText' => '年商',
+                        ]); ?>
+                        
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        親業種
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'CustomerProfiles.industry_id',
+                            'sortText' => '親業種',
+                        ]); ?>
+                    </th>       
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        メトリクス
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        子業種 
+                        指標別の点数
                     </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        最初の受注日
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        最近の受注日
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        OBライセンス数
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        OB以外ライセンス数
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        OBシリーズの受注回数
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        お問い合わせの着信回数
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        お問い合わせの送信回数
-                    </th>
-                    <?php foreach($indicators as $indicator): ?>
-                        <th scope="col" class="px-4 py-2 border border-white">
-                        <?= $indicator['name'] ?> (<?= $indicator['weight'] ?>)
-                    </th>
-                    <?php endforeach; ?>    
-                    
                     <th scope="col" class="px-4 py-2 border border-white">
                         総合評価
                     </th>
@@ -245,72 +246,84 @@ $this->Form->setTemplates([
             <?php if ($customers->count() > 0): ?>
                 <?php foreach ($customers as $customer): ?>
                     <tr>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customer->id ?>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <a 
                                 href="<?= $customer->customer_profile->homepage ?? '#' ?>" 
-                                class="<?= $customer->customer_profile->homepage ? 'inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline' : '' ?>">
+                                class="<?= $customer->customer_profile->homepage ? 'inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline' : '' ?>">
                                     <?= $customer->name ?>
                             </a>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                            <?php if($customer->customer_profile->corporate_number): ?>
+                                <a  href="https://www.hellowork.mhlw.go.jp/kensaku/GECA110010.do?screenId=GECA110010&action=searchShokuba&hojinNo=<?= $customer->customer_profile->corporate_number ?>&shokuba=1&kyujinShurui=1"
+                                    target="blank"
+                                    class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline"
+                                >
+                                    詳細
+                                </a>
+                            <?php else: ?>
+                                N/A
+                            <?php endif; ?>
+                        </td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customer->prefecture->name  ?? 'N/A' ?>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= !empty($customer->customer_orders) 
                                 ? $customer->customer_orders[count($customer->customer_orders) - 1]->product_type->name 
                                 : 'N/A' ?>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->employee_number ?? 'N/A' ?>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->capital ? $this->Number->format($customer->customer_profile->capital) : 'N/A' ?>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->revenue ? $this->Number->format($customer->customer_profile->revenue) : 'N/A' ?>
                         </td>
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->industry->name ?? 'N/A' ?>
                         </td>
-                        <td>
-                            <?= $customer->customer_profile->sub_industry->name ?? 'N/A' ?>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                            <a 
+                                data-title="<?= $customer->name ?>"
+                                data-description="<?= $customer->name ?>様のメトリクス"
+                                data-first-order-date="<?= $customer->customer_metric->first_order_date ?? '' ?>"
+                                data-last-order-date="<?= $customer->customer_metric->last_order_date ?? '' ?>"
+                                data-order-count="<?= $customer->customer_metric->order_count ?? '' ?>"
+                                data-oricoh-license-count="<?= $customer->customer_metric->oricoh_license_count ?? '' ?>"
+                                data-other-license-count="<?= $customer->customer_metric->other_license_count ?? '' ?>"
+                                data-in-contact-count="<?= $customer->customer_metric->in_contact_count ?? '' ?>"
+                                data-out-contact-count="<?= $customer->customer_metric->out_contact_count ?? '' ?>"
+                                onclick="openModal(this, setMetrics)"
+                                class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                詳細
+                            </a>
                         </td>
-                        <td>
-                            <?= $customer->customer_metric?->first_order_date?->i18nFormat('yyyy年MM月dd日') ?? 'N/A' ?>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                            <a 
+                                data-title="<?= $customer->name ?>"
+                                data-description="<?= $customer->name ?>様の指標別の点数"
+                                <?php foreach($indicators as $indicator): ?>
+                                    data-<?= $indicator['short_name'] ?>="<?= $indicator['name'] . '@' . ($customerScores[$customer->id][$indicator['id']] ?? '') ?>"
+                                <?php endforeach; ?>
+                                onclick="openModal(this, setIndicators)"
+                                class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                詳細
+                                
+                            </a>
                         </td>
-                        <td>
-                            <?= $customer->customer_metric?->last_order_date?->i18nFormat('yyyy年MM月dd日') ?? 'N/A' ?>
-                        </td>
-                        <td>
-                            <?= $customer->customer_metric->oricoh_license_count ?? '0' ?>
-                        </td>
-                        <td>
-                            <?= $customer->customer_metric->other_license_count ?? '0' ?>
-                        </td>
-                        <td>
-                            <?= $customer->customer_metric->order_count ?? '0' ?>
-                        </td>
-                        <td>
-                            <?= $customer->customer_metric->in_contact_count ?? '0' ?>
-                        </td>
-                        <td>
-                            <?= $customer->customer_metric->out_contact_count ?? '0' ?>
-                        </td>
-                        <?php foreach($indicators as $indicator): ?>
-                        <th>
-                            <?= $customerScores[$customer->id][$indicator['id']] ?? 'NA' ?> 
-                        </th>
-                        <?php endforeach; ?>    
-                        <td>
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?= $customerScores[$customer->id]['weightedAverage'] ?? 'NA' ?> 
                         </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p>No results found.</p>
+                <p>該当の顧客情報が見つかりません！</p>
             <?php endif; ?>
             </tbody>
         </table>
@@ -319,6 +332,89 @@ $this->Form->setTemplates([
     <?php endif; ?>
 </section>
 
+<div id="modalContainer" class="fixed inset-0 z-50 hidden overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-xl font-bold">Details</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modalContent" class="mt-4">
+                Loading...
+            </div>
+        </div>
+    
+</div>
+
+<script>
+function openModal(button, setFunction) {
+    
+    const title = button.getAttribute('data-title');
+    document.getElementById('modalTitle').textContent = title;
+    
+    setFunction(button);
+
+    // Show modal
+    document.getElementById('modalContainer').classList.remove('hidden');
+    
+    // Prevent body scrolling
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    // Hide modal
+    document.getElementById('modalContainer').classList.add('hidden');
+    
+    // Restore body scrolling
+    document.body.style.overflow = 'auto';
+}
+
+function setMetrics(button) {
+    const modalContent = document.getElementById('modalContent');
+    
+    modalContent.innerHTML = '';
+
+    const description = button.getAttribute('data-description');
+    const orderCount = button.getAttribute('data-oricoh-license-count');
+    const oricohLicenseCount = button.getAttribute('data-oricoh-license-count');
+    const otherLicenseCount = button.getAttribute('data-other-license-count');
+    const inContactCount = button.getAttribute('data-in-contact-count');
+    const outContactCount = button.getAttribute('data-out-contact-count');
+    
+    modalContent.innerHTML = `
+        <p class="mb-4">${description}</p>
+        <p><span class="font-bold">受注回数：</span>${orderCount}</p>
+        <p><span class="font-bold">OBライセンス数：</span>${oricohLicenseCount}</p>
+        <p><span class="font-bold">他ライセンス数：</span>${otherLicenseCount}</p>
+        <p><span class="font-bold">お問い合わせの着信回数：</span>${inContactCount}</p>
+        <p><span class="font-bold">お問い合わせの着信回数：</span>${outContactCount}</p>
+    `;
+}
+
+function setIndicators(button) {
+    const modalContent = document.getElementById('modalContent');
+    
+    modalContent.innerHTML = '';
+    
+    const dataAttributes = button.dataset;
+
+    for (const [key, value] of Object.entries(dataAttributes)) {
+        if (key === "title")
+            continue
+        if (key === "description") {
+            modalContent.innerHTML += `<p class="mb-4">${value}</p>`;
+            continue
+        }
+        
+        const [label, content] = value.split("@");
+        
+        modalContent.innerHTML += `<p><span class="font-bold">${label}：</span>${content}</p>`;
+    }
+}
+</script>
 
 
 

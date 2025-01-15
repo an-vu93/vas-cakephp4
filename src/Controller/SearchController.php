@@ -63,6 +63,7 @@ class SearchController extends AppController
                     return [
                         'id' => $indicator->id,
                         'name' => $indicator->name,
+                        'short_name' => $indicator->short_name,
                         'weight' => $indicator->_matchingData['IndicatorWeights']->weight
                     ];
                 })
@@ -84,7 +85,11 @@ class SearchController extends AppController
                 'Customers.name',
                 'Prefectures.id',
                 'CustomerOrders.industry_id',
-                'CustomerOrders.sub_ndustry_id',
+                // 'CustomerOrders.sub_ndustry_id',
+                'CustomerProfiles.employee_number',
+                'CustomerProfiles.capital',
+                'CustomerProfiles.revenue',
+                'CustomerProfiles.industry_id',
             ],
         ]; 
 
