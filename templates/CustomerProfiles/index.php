@@ -1,64 +1,50 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var iterable<\App\Model\Entity\CustomerProfile> $customerProfiles
- */
+<?php 
+$this->extend('/element/container');
+$this->assign('isVisible', false);
+$this->assign('title', '顧客プロファイル');
+
 ?>
-<div class="customerProfiles index content">
-    <?= $this->Html->link(__('New Customer Profile'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Customer Profiles') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('customer_id') ?></th>
-                    <th><?= $this->Paginator->sort('corporate_number') ?></th>
-                    <th><?= $this->Paginator->sort('hw_business_number') ?></th>
-                    <th><?= $this->Paginator->sort('employee_number') ?></th>
-                    <th><?= $this->Paginator->sort('capital') ?></th>
-                    <th><?= $this->Paginator->sort('revenue') ?></th>
-                    <th><?= $this->Paginator->sort('recruiting_flg') ?></th>
-                    <th><?= $this->Paginator->sort('ignore_flg') ?></th>
-                    <th><?= $this->Paginator->sort('created') ?></th>
-                    <th><?= $this->Paginator->sort('modified') ?></th>
-                    <th><?= $this->Paginator->sort('prefecture_id') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($customerProfiles as $customerProfile): ?>
-                <tr>
-                    <td><?= $this->Number->format($customerProfile->id) ?></td>
-                    <td><?= $customerProfile->has('customer') ? $this->Html->link($customerProfile->customer->name, ['controller' => 'Customers', 'action' => 'view', $customerProfile->customer->id]) : '' ?></td>
-                    <td><?= $customerProfile->corporate_number === null ? '' : $this->Number->format($customerProfile->corporate_number) ?></td>
-                    <td><?= $customerProfile->hw_business_number === null ? '' : $this->Number->format($customerProfile->hw_business_number) ?></td>
-                    <td><?= $customerProfile->employee_number === null ? '' : $this->Number->format($customerProfile->employee_number) ?></td>
-                    <td><?= $customerProfile->capital === null ? '' : $this->Number->format($customerProfile->capital) ?></td>
-                    <td><?= $customerProfile->revenue === null ? '' : $this->Number->format($customerProfile->revenue) ?></td>
-                    <td><?= $customerProfile->recruiting_flg === null ? '' : $this->Number->format($customerProfile->recruiting_flg) ?></td>
-                    <td><?= $customerProfile->ignore_flg === null ? '' : $this->Number->format($customerProfile->ignore_flg) ?></td>
-                    <td><?= h($customerProfile->created) ?></td>
-                    <td><?= h($customerProfile->modified) ?></td>
-                    <td><?= $customerProfile->has('prefecture') ? $this->Html->link($customerProfile->prefecture->name, ['controller' => 'Prefectures', 'action' => 'view', $customerProfile->prefecture->id]) : '' ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $customerProfile->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $customerProfile->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $customerProfile->id], ['confirm' => __('Are you sure you want to delete # {0}?', $customerProfile->id)]) ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
-    </div>
+
+<div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+    <table id="dynamicTable" class="table-auto w-full border border-white mt-10 mb-5">
+        <thead class="bg-primary-500 text-white">
+            <tr>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('id', 'ID') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('customer_id', '顧客名') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('corporate_number', '法人番号') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('hw_business_number', '事業所番号(HW)') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('prefecture_id', '都道府県') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('employee_number', '従業員数') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('capital', '資本金') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('revenue', '年商') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('recruiting_flg', '採用中') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white"><?= $this->Paginator->sort('ignore_flg', '無視') ?></th>
+                <th scope="col" class="px-4 py-2 border border-white">操作</th>
+            </tr>
+        </thead>
+        <tbody class="bg-primary-50">
+            <?php foreach ($customerProfiles as $customerProfile): ?>
+            <tr>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->id ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->has('customer') ? $customerProfile->customer->name : '' ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->corporate_number === null ? '' : $customerProfile->corporate_number ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->hw_business_number === null ? '' : $customerProfile->hw_business_number ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->has('prefecture') ? $customerProfile->prefecture->name : '' ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->employee_number === null ? '' : $this->Number->format($customerProfile->employee_number) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->capital === null ? '' : $this->Number->format($customerProfile->capital) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->revenue === null ? '' : $this->Number->format($customerProfile->revenue) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->recruiting_flg === null ? '' : $this->Number->format($customerProfile->recruiting_flg) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= $customerProfile->ignore_flg === null ? '' : $this->Number->format($customerProfile->ignore_flg) ?></td>
+                <td class="w-20 px-4 py-2 text-center border border-white">
+                    <?= $this->Html->link(__('編集'), 
+                        ['action' => 'edit', $customerProfile->id],
+                        ['class' => 'add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
+                    ) ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <?= $this->element('pagination') ?>
 </div>
