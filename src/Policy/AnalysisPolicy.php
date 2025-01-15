@@ -23,6 +23,7 @@ class AnalysisPolicy extends BasePolicy
 
         return $this->isAllowed($user, $additonalAllowedRoles);
     }
+    
     /**
      * Check if $user can add Analysis
      *

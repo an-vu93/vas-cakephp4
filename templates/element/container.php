@@ -8,7 +8,7 @@
 </header>
 
 <section class="h-full py-8 antialiased md:py-12">
-    <div class="overflow-y-auto px-4">
+    <div class="px-4 h-full">
         <?= $this->fetch('content') ?>
     </div>
 </section>
