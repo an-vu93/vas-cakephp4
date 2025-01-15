@@ -18,6 +18,9 @@ class CustomerProfilesController extends AppController
      */
     public function index()
     {
+        $customerProfile = $this->CustomerProfiles->newEmptyEntity();
+        $this->Authorization->authorize($customerProfile);
+        
         $this->paginate = [
             'contain' => ['Customers', 'Prefectures'],
         ];
@@ -74,8 +77,10 @@ class CustomerProfilesController extends AppController
     public function edit($id = null)
     {
         $customerProfile = $this->CustomerProfiles->get($id, [
-            'contain' => [],
+            'contain' => ['Customers', 'Prefectures'],
         ]);
+        $this->Authorization->authorize($customerProfile);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $customerProfile = $this->CustomerProfiles->patchEntity($customerProfile, $this->request->getData());
             if ($this->CustomerProfiles->save($customerProfile)) {
