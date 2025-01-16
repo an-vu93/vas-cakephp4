@@ -134,6 +134,7 @@ $this->Form->setTemplates([
                     'value' => $requestParams['revenue'] ?? '',
                 ]) ?>
             </td>
+
         </tr>
        
         <tr class="flex mt-4">
@@ -146,6 +147,19 @@ $this->Form->setTemplates([
                     ],
                     'class' => 'shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5',
                     'value' => $requestParams['analysis_id'] ?? '',
+                ]) ?>
+            </td>
+
+            <td class="flex w-1/3 border-none p-0">
+                <?= $this->Form->control('min_score', [
+                    'type' => 'number',
+                    'label' => [
+                        'text' => '最低点数',
+                        'class' => 'font-medium bg-primary-500 text-white w-1/4',
+                        'escape' => false, 
+                    ],
+                    'class' => 'shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5',
+                    'value' => $requestParams['min_score'] ?? '',
                 ]) ?>
             </td>
         </tr>
@@ -238,7 +252,10 @@ $this->Form->setTemplates([
                         指標別の点数
                     </th>
                     <th scope="col" class="px-4 py-2 border border-white">
-                        総合評価
+                        <?= $this->element('sort_field', [
+                            'sortField' => 'Customers.weighted_avg_score',
+                            'sortText' => '総合評価',
+                        ]); ?>
                     </th>
                 </tr>
             </thead>
@@ -308,8 +325,8 @@ $this->Form->setTemplates([
                             <a 
                                 data-title="<?= $customer->name ?>"
                                 data-description="<?= $customer->name ?>様の指標別の点数"
-                                <?php foreach($indicators as $indicator): ?>
-                                    data-<?= $indicator['short_name'] ?>="<?= $indicator['name'] . '@' . ($customerScores[$customer->id][$indicator['id']] ?? '') ?>"
+                                <?php foreach($customer->customer_scores as $customer_score): ?>
+                                    data-indicator-<?= $customer_score->indicator_id ?>="<?= $indicators[$customer_score->indicator_id] . '@' . ($customer_score->indicator_score ?? '') ?>"
                                 <?php endforeach; ?>
                                 onclick="openModal(this, setIndicators)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
@@ -318,7 +335,7 @@ $this->Form->setTemplates([
                             </a>
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">
-                            <?= $customerScores[$customer->id]['weightedAverage'] ?? 'NA' ?> 
+                            <?= $customer->weighted_avg_score ?> 
                         </td>
                     </tr>
                 <?php endforeach; ?>

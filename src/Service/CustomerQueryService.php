@@ -3,6 +3,7 @@ namespace App\Service;
 
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Database\Expression\QueryExpression;
 
 class CustomerQueryService
 {
@@ -16,22 +17,36 @@ class CustomerQueryService
     {
         $customersTable = TableRegistry::getTableLocator()->get('Customers');
         
-        $query = $customersTable->find()
-            ->contain([
+        $analysisId = $requestParams['analysis_id'] ?? '0';
+
+        $query = $customersTable->find();
+        $query->select([
+                'weighted_avg_score' => $query->newExpr('customer_weighted_average(Customers.id, :analysis)')
+        ]);
+        $query->bind(':analysis', $analysisId, 'integer');
+        $query->contain([
+                'CustomerProfiles' => [
+                    'Industries',
+                    'SubIndustries',
+                ],
                 'CustomerOrders' => [
                     'ProductTypes',
                 ],
                 'Prefectures', 
                 'CustomerMetrics',
                 'CustomerScores',
-                'CustomerProfiles' => [
-                    'Industries',
-                    'SubIndustries',
-                ],
+                
             ]);
+
+        $query->enableAutoFields(true);
 
         // Apply filters based on request parameters
         $query = $this->applyFilters($query, $requestParams);
+        
+        // Set lower boundary if exist
+        if (!empty($requestParams['min_score'])) {
+            $query->having(['weighted_avg_score >' => $requestParams['min_score']]);
+        }
 
         return $query;
     }
@@ -65,8 +80,7 @@ class CustomerQueryService
 
         // Salesperson filter
         if (!empty($requestParams['salesperson_id'])) {
-            $query
-                ->matching('CustomerOrders', function ($q) use ($requestParams) {
+            $query->matching('CustomerOrders', function ($q) use ($requestParams) {
                     return $q->where(['CustomerOrders.salesperson_id' => $requestParams['salesperson_id']]);
                 })
                 ->distinct();

@@ -53,23 +53,12 @@ class SearchController extends AppController
         // Build customer query using the service
         $customerQuery = $this->customerQueryService->buildCustomerQuery($requestParams);
 
-        $indicators = [];
-        if (!empty($requestParams['analysis_id'])) {
-            $indicators = $indicatorTable->find()
-                ->contain('IndicatorWeights')
-                ->matching('IndicatorWeights')
-                ->where(['IndicatorWeights.analysis_id' => $requestParams['analysis_id']])
-                ->map(function ($indicator) {
-                    return [
-                        'id' => $indicator->id,
-                        'name' => $indicator->name,
-                        'short_name' => $indicator->short_name,
-                        'weight' => $indicator->_matchingData['IndicatorWeights']->weight
-                    ];
-                })
-                ->toArray();
-        }
-
+       
+        $indicators = $indicatorTable->find('list', [
+            'keyField' => 'id',
+            'valueField' => 'name'
+        ])->toArray();
+        
         $this->paginate = [
             'contain' => [
                 'Prefectures', 
@@ -83,6 +72,7 @@ class SearchController extends AppController
             'sortWhitelist' => [
                 'Customers.id',
                 'Customers.name',
+                'Customers.weighted_avg_score',
                 'Prefectures.id',
                 'CustomerOrders.industry_id',
                 // 'CustomerOrders.sub_ndustry_id',
@@ -90,6 +80,9 @@ class SearchController extends AppController
                 'CustomerProfiles.capital',
                 'CustomerProfiles.revenue',
                 'CustomerProfiles.industry_id',
+            ],
+            'order' => [
+                'Customers.weighted_avg_score' => 'DESC'
             ],
         ]; 
 
@@ -136,35 +129,10 @@ class SearchController extends AppController
             'keyField' => 'id',
             'valueField' => 'name'
         ])->toArray();
-           
-        // Create a lookup array for each customer's scores
-        $customerScores = [];
-        // Initialize array to store weighted averages
-        $weightedAverages = [];
-        
-        foreach ($customers as $customer) {
-            if (!empty($customer->customer_scores)) {
-                // Get the individual scores
-                $scores = collection($customer->customer_scores)
-                    ->combine('indicator_id', 'indicator_score')
-                    ->toArray();
-                $customerScores[$customer->id] = $scores;
-
-                // Calculate and add weighted average if we have indicators
-                if (!empty($indicators)) {
-                    $weightedAverage = $this->calculateWeightedAverage($scores, $indicators);
-                    $customerScores[$customer->id]['weightedAverage'] = $weightedAverage;
-                } else {
-                    $customerScores[$customer->id]['weightedAverage'] = null;
-                }
-            } else {
-                $customersScores[$customer->id] = [];
-            }
-        }
 
         $dataSourceRef = '複数の外部データソースから取得され、統合された情報になります。<br>参照先（順番なし）：<br>・ハローワークインターネットサービス<br>・企業のホームページ<br>・gBizINFO';
         
-        $this->set(compact('customers', 'requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'customerScores', 'indicators', 'dataSourceRef'));
+        $this->set(compact('customers', 'requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'indicators', 'dataSourceRef'));
     }
 
     private function calculateWeightedAverage(array $scores, array $indicators): ? float 
@@ -324,16 +292,16 @@ class SearchController extends AppController
                         $row[] = $scores[$indicator->id] ?? '';
                     }
                     
-                    // Calculate and add weighted average
-                    $weightedAverage = $this->calculateWeightedAverage($scores, 
-                        collection($indicators)->map(function ($indicator) {
-                            return [
-                                'id' => $indicator->id,
-                                'weight' => $indicator->_matchingData['IndicatorWeights']->weight
-                            ];
-                        })->toArray()
-                    );
-                    $row[] = $weightedAverage ?? '';
+                    // // Calculate and add weighted average
+                    // $weightedAverage = $this->calculateWeightedAverage($scores, 
+                    //     collection($indicators)->map(function ($indicator) {
+                    //         return [
+                    //             'id' => $indicator->id,
+                    //             'weight' => $indicator->_matchingData['IndicatorWeights']->weight
+                    //         ];
+                    //     })->toArray()
+                    // );
+                    $row[] = $customer->weighted_avg_score ?? '';
                 }
                 
                 fputcsv($fp, $row);
