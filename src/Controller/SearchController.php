@@ -49,44 +49,11 @@ class SearchController extends AppController
         $analysesTable = $this->fetchTable('Analyses');
         $indicatorTable = $this->fetchTable('Indicators');
         $indicatorWeightTable = $this->fetchTable('IndicatorWeights');
-
-        // Build customer query using the service
-        $customerQuery = $this->customerQueryService->buildCustomerQuery($requestParams);
-
-       
+           
         $indicators = $indicatorTable->find('list', [
             'keyField' => 'id',
             'valueField' => 'name'
-        ])->toArray();
-        
-        $this->paginate = [
-            'contain' => [
-                'Prefectures', 
-                'CustomerOrders' => [
-                    'ProductTypes',
-                ],
-                'CustomerMetrics',
-                'CustomerScores',
-
-            ],
-            'sortWhitelist' => [
-                'Customers.id',
-                'Customers.name',
-                'Customers.weighted_avg_score',
-                'Prefectures.id',
-                'CustomerOrders.industry_id',
-                // 'CustomerOrders.sub_ndustry_id',
-                'CustomerProfiles.employee_number',
-                'CustomerProfiles.capital',
-                'CustomerProfiles.revenue',
-                'CustomerProfiles.industry_id',
-            ],
-            'order' => [
-                'Customers.weighted_avg_score' => 'DESC'
-            ],
-        ]; 
-
-        $customers = $this->paginate($customerQuery, ['limit' => 20]);
+        ])->toArray();       
       
         $prefectures = $prefecturesTable->find('list', [
             'keyField' => 'id',
@@ -130,40 +97,45 @@ class SearchController extends AppController
             'valueField' => 'name'
         ])->toArray();
 
+        if (!empty($requestParams)) {
+            // Build customer query using the service
+            $customerQuery = $this->customerQueryService->buildCustomerQuery($requestParams);
+
+            $this->paginate = [
+                'contain' => [
+                    'Prefectures', 
+                    'CustomerProducts' => [
+                        'ProductTypes',
+                    ],
+                    'CustomerMetrics',
+                    'CustomerScores',
+
+                ],
+                'sortWhitelist' => [
+                    'Customers.id',
+                    'Customers.name',
+                    'Customers.weighted_avg_score',
+                    'Prefectures.id',
+                    'CustomerProfiles.industry_id',
+                    // 'CustomerProfiles.sub_ndustry_id',
+                    'CustomerProfiles.employee_number',
+                    'CustomerProfiles.capital',
+                    'CustomerProfiles.revenue',
+                    'CustomerProfiles.industry_id',
+                ],
+                'order' => [
+                    'Customers.weighted_avg_score' => 'DESC'
+                ],
+            ]; 
+
+            $customers = $this->paginate($customerQuery, ['limit' => 20]);
+
+            $this->set(compact('customers'));
+        }
+
         $dataSourceRef = '複数の外部データソースから取得され、統合された情報になります。<br>参照先（順番なし）：<br>・ハローワークインターネットサービス<br>・企業のホームページ<br>・gBizINFO';
         
-        $this->set(compact('customers', 'requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'indicators', 'dataSourceRef'));
-    }
-
-    private function calculateWeightedAverage(array $scores, array $indicators): ? float 
-    {
-        if (empty($scores) || empty($indicators)) {
-            return null;
-        }
-
-        $totalWeight = 0;
-        $weightedSum = 0;
-
-        foreach ($indicators as $indicator) {
-            $indicatorId = $indicator['id'];
-            $weight = $indicator['weight'];
-            
-            // Skip if we don't have a score for this indicator
-            if (!isset($scores[$indicatorId])) {
-                continue;
-            }
-
-            $score = $scores[$indicatorId];
-            $weightedSum += $score * $weight;
-            $totalWeight += $weight;
-        }
-
-        // Avoid division by zero
-        if ($totalWeight === 0) {
-            return null;
-        }
-
-        return round($weightedSum / $totalWeight, 2);
+        $this->set(compact('requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'indicators', 'dataSourceRef'));
     }
 
     public function export() 
@@ -177,28 +149,8 @@ class SearchController extends AppController
         
         $this->ActivityLog->logActivity('ファイル出力', '以下の条件で情報抽出が行われた: ' . json_encode($requestParams));
         
-    
-        // Initialize tables
-        $customersTable = $this->fetchTable('Customers');
-        
         // Build the query similar to index()
-        $customerQuery = $this->customerQueryService->buildCustomerQuery($requestParams);
-        
-        // Apply the same filters as in index()
-        if (!empty($requestParams['query'])) {
-            if (is_numeric($requestParams['query'])) {
-                $customerQuery->where(['Customers.id' => $requestParams['query']]);
-            } else {
-                $customerQuery->where([
-                    'Customers.name LIKE' => '%' . $requestParams['query'] . '%',
-                ]);
-            }
-        }
-
-        if (!empty($requestParams['prefecture_id'])) {
-            $customerQuery->where(['Customers.prefecture_id' => $requestParams['prefecture_id']]);
-        }
-        
+        $customerQuery = $this->customerQueryService->buildCustomerQuery($requestParams);      
     
         // Prepare CSV headers
         $headers = [
@@ -245,80 +197,55 @@ class SearchController extends AppController
         
         // Write headers
         fputcsv($fp, $headers);
-
-        // Stream the response in chunks
-        $chunkSize = 1000; // Adjust based on your memory constraints
-        $page = 1;
         
-        while (true) {
-            $chunk = $customerQuery->limit($chunkSize)
-                ->page($page)
-                ->all();
+        $customers = $customerQuery
+            ->order(['weighted_avg_score' => 'DESC'])
+            ->find('all');
 
-            if ($chunk->isEmpty()) {
-                break;
-            }
-
-            foreach ($chunk as $customer) {  
-                    
-                $row = [
-                    $customer->id,
-                    $customer->name,
-                    $customer->prefecture->name ?? '',
-                    !empty($customer->customer_orders) 
-                        ? $customer->customer_orders[count($customer->customer_orders) - 1]->product_type->name 
-                        : '',
-                    $customer->customer_profile->employee_number ?? '',
-                    $customer->customer_profile->capital ?? '',
-                    $customer->customer_profile->revene ?? '',
-                    $customer->customer_profile->industry->name ?? '',
-                    $customer->customer_profile->sub_industry->name ?? '',
-                    $customer->customer_metric->first_order_date ?? '',
-                    $customer->customer_metric->last_order_date ?? '',
-                    $customer->customer_metric->order_count ?? '',
-                    $customer->customer_metric->oricoh_license_count ?? '',
-                    $customer->customer_metric->other_license_count ?? '',
-                    $customer->customer_metric->in_contact_count ?? '',
-                    $customer->customer_metric->out_contact_count ?? '',
-                ];
+        foreach ($customers as $customer) {  
                 
-                // Add scores if analysis is selected
-                if (!empty($requestParams['analysis_id'])) {
-                    $scores = collection($customer->customer_scores)
-                        ->combine('indicator_id', 'indicator_score')
-                        ->toArray();
-                        
-                    foreach ($indicators as $indicator) {
-                        $row[] = $scores[$indicator->id] ?? '';
-                    }
+            $row = [
+                $customer->id,
+                $customer->name,
+                $customer->prefecture->name ?? '',
+                !empty($customer->customer_products) 
+                    ? $customer->customer_products[count($customer->customer_products) - 1]->product_type->name 
+                    : '',
+                $customer->customer_profile->employee_number ?? '',
+                $customer->customer_profile->capital ?? '',
+                $customer->customer_profile->revene ?? '',
+                $customer->customer_profile->industry->name ?? '',
+                $customer->customer_profile->sub_industry->name ?? '',
+                $customer->customer_metric->first_order_date ?? '',
+                $customer->customer_metric->last_order_date ?? '',
+                $customer->customer_metric->order_count ?? '',
+                $customer->customer_metric->oricoh_license_count ?? '',
+                $customer->customer_metric->other_license_count ?? '',
+                $customer->customer_metric->in_contact_count ?? '',
+                $customer->customer_metric->out_contact_count ?? '',
+            ];
+            
+            // Add scores if analysis is selected
+            if (!empty($requestParams['analysis_id'])) {
+                $scores = collection($customer->customer_scores)
+                    ->combine('indicator_id', 'indicator_score')
+                    ->toArray();
                     
-                    // // Calculate and add weighted average
-                    // $weightedAverage = $this->calculateWeightedAverage($scores, 
-                    //     collection($indicators)->map(function ($indicator) {
-                    //         return [
-                    //             'id' => $indicator->id,
-                    //             'weight' => $indicator->_matchingData['IndicatorWeights']->weight
-                    //         ];
-                    //     })->toArray()
-                    // );
-                    $row[] = $customer->weighted_avg_score ?? '';
+                foreach ($indicators as $indicator) {
+                    $row[] = $scores[$indicator->id] ?? '';
                 }
                 
-                fputcsv($fp, $row);
-
-                // Flush the output buffer periodically
-                if (ob_get_length() > 10000) {
-                    ob_flush();
-                    flush();
-                }
+                $row[] = $customer->weighted_avg_score ?? '';
             }
             
-            $page++;
-            
-            // Clear the current chunk from memory
-            unset($chunk);
+            fputcsv($fp, $row);
 
-        } 
+            // Flush the output buffer periodically
+            if (ob_get_length() > 10000) {
+                ob_flush();
+                flush();
+            }
+        }
         
         // Reset file pointer
         rewind($fp);

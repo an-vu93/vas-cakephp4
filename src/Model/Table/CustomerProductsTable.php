@@ -9,30 +9,30 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * CustomerOrders Model
+ * CustomerProducts Model
  *
  * @property \App\Model\Table\CustomersTable&\Cake\ORM\Association\BelongsTo $Customers
  * @property \App\Model\Table\ProductTypesTable&\Cake\ORM\Association\BelongsTo $ProductTypes
  * @property \App\Model\Table\IndustriesTable&\Cake\ORM\Association\BelongsTo $Industries
  * @property \App\Model\Table\SubIndustriesTable&\Cake\ORM\Association\BelongsTo $SubIndustries
  *
- * @method \App\Model\Entity\CustomerOrder newEmptyEntity()
- * @method \App\Model\Entity\CustomerOrder newEntity(array $data, array $options = [])
- * @method \App\Model\Entity\CustomerOrder[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\CustomerOrder get($primaryKey, $options = [])
- * @method \App\Model\Entity\CustomerOrder findOrCreate($search, ?callable $callback = null, $options = [])
- * @method \App\Model\Entity\CustomerOrder patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\CustomerOrder[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \App\Model\Entity\CustomerOrder|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\CustomerOrder saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\CustomerOrder[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \App\Model\Entity\CustomerOrder[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \App\Model\Entity\CustomerOrder[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \App\Model\Entity\CustomerOrder[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
+ * @method \App\Model\Entity\CustomerProduct newEmptyEntity()
+ * @method \App\Model\Entity\CustomerProduct newEntity(array $data, array $options = [])
+ * @method \App\Model\Entity\CustomerProduct[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\CustomerProduct get($primaryKey, $options = [])
+ * @method \App\Model\Entity\CustomerProduct findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method \App\Model\Entity\CustomerProduct patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\CustomerProduct[] patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \App\Model\Entity\CustomerProduct|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\CustomerProduct saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\CustomerProduct[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
+ * @method \App\Model\Entity\CustomerProduct[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
+ * @method \App\Model\Entity\CustomerProduct[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
+ * @method \App\Model\Entity\CustomerProduct[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class CustomerOrdersTable extends Table
+class CustomerProductsTable extends Table
 {
     /**
      * Initialize method
@@ -44,7 +44,7 @@ class CustomerOrdersTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('customer_orders');
+        $this->setTable('customer_products');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 

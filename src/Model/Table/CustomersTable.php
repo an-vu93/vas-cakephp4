@@ -14,7 +14,7 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\PrefecturesTable&\Cake\ORM\Association\BelongsTo $Prefectures
  * @property \App\Model\Table\CustomerContactsTable&\Cake\ORM\Association\HasMany $CustomerContacts
  * @property \App\Model\Table\CustomerMetricsTable&\Cake\ORM\Association\HasMany $CustomerMetrics
- * @property \App\Model\Table\CustomerOrdersTable&\Cake\ORM\Association\HasMany $CustomerOrders
+ * @property \App\Model\Table\CustomerProductsTable&\Cake\ORM\Association\HasMany $CustomerProducts
  * @property \App\Model\Table\ProjectsTable&\Cake\ORM\Association\HasMany $Projects
  *
  * @method \App\Model\Entity\Customer newEmptyEntity()
@@ -60,7 +60,7 @@ class CustomersTable extends Table
         $this->hasOne('CustomerMetrics', [
             'foreignKey' => 'customer_id',
         ]);
-        $this->hasMany('CustomerOrders', [
+        $this->hasMany('CustomerProducts', [
             'foreignKey' => 'customer_id',
         ]);
         $this->hasMany('CustomerScores', [

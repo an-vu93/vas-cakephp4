@@ -16,7 +16,7 @@ use Cake\ORM\Entity;
  * @property int $modified_id
  *
  * @property \App\Model\Entity\SubIndustry $parent_sub_industry
- * @property \App\Model\Entity\CustomerOrder[] $customer_orders
+ * @property \App\Model\Entity\CustomerProduct[] $customer_orders
  * @property \App\Model\Entity\SubIndustry[] $child_sub_industries
  */
 class SubIndustry extends Entity

@@ -20,7 +20,7 @@ use InvalidArgumentException;
  * @property \App\Model\Entity\Prefecture $prefecture
  * @property \App\Model\Entity\CustomerContact[] $customer_contacts
  * @property \App\Model\Entity\CustomerMetric $customer_metric
- * @property \App\Model\Entity\CustomerOrder[] $customer_orders
+ * @property \App\Model\Entity\CustomerProduct[] $customer_rpducts
  * @property \App\Model\Entity\Project[] $projects
  */
 class Customer extends Entity
@@ -42,7 +42,7 @@ class Customer extends Entity
         'prefecture' => true,
         'customer_contacts' => true,
         'customer_metric' => true,
-        'customer_orders' => true,
+        'customer_products' => true,
         'customer_scores' => true,
         'projects' => true,
     ];

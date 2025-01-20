@@ -29,7 +29,7 @@ class CustomerQueryService
                     'Industries',
                     'SubIndustries',
                 ],
-                'CustomerOrders' => [
+                'CustomerProducts' => [
                     'ProductTypes',
                 ],
                 'Prefectures', 
@@ -80,8 +80,8 @@ class CustomerQueryService
 
         // Salesperson filter
         if (!empty($requestParams['salesperson_id'])) {
-            $query->matching('CustomerOrders', function ($q) use ($requestParams) {
-                    return $q->where(['CustomerOrders.salesperson_id' => $requestParams['salesperson_id']]);
+            $query->matching('CustomerProducts', function ($q) use ($requestParams) {
+                    return $q->where(['CustomerProducts.salesperson_id' => $requestParams['salesperson_id']]);
                 })
                 ->distinct();
         }
@@ -102,8 +102,8 @@ class CustomerQueryService
 
         // OB version filter
         if (!empty($requestParams['product_type_id'])) {
-            $query->matching('CustomerOrders', function ($q) use ($requestParams) {
-                return $q->where(['CustomerOrders.product_type_id' => $requestParams['product_type_id']]);
+            $query->matching('CustomerProducts', function ($q) use ($requestParams) {
+                return $q->where(['CustomerProducts.product_type_id' => $requestParams['product_type_id']]);
             });
         }
 

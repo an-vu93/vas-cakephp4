@@ -289,8 +289,8 @@ $this->Form->setTemplates([
                             <?= $customer->prefecture->name  ?? 'N/A' ?>
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">
-                            <?= !empty($customer->customer_orders) 
-                                ? $customer->customer_orders[count($customer->customer_orders) - 1]->product_type->name 
+                            <?= !empty($customer->customer_products) 
+                                ? $customer->customer_products[count($customer->customer_products) - 1]->product_type->name 
                                 : 'N/A' ?>
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">

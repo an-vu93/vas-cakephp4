@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  * @property string|null $name
  * @property int|null $sale_state_flg
  *
- * @property \App\Model\Entity\CustomerOrder[] $customer_orders
+ * @property \App\Model\Entity\CustomerProduct[] $customer_products
  * @property \App\Model\Entity\OricohSeries[] $oricoh_series
  * @property \App\Model\Entity\ProductTypeCustomerContact[] $product_type_customer_contact
  */
@@ -30,7 +30,7 @@ class ProductType extends Entity
     protected $_accessible = [
         'name' => true,
         'sale_state_flg' => true,
-        'customer_orders' => true,
+        'customer_products' => true,
         'oricoh_series' => true,
         'product_type_customer_contact' => true,
     ];

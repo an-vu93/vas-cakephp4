@@ -14,7 +14,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $modified
  * @property int $modified_id
  *
- * @property \App\Model\Entity\CustomerOrder[] $customer_orders
+ * @property \App\Model\Entity\CustomerProduct[] $customer_orders
  */
 class Industry extends Entity
 {
@@ -32,6 +32,6 @@ class Industry extends Entity
         'order' => true,
         'modified' => true,
         'modified_id' => true,
-        'customer_orders' => true,
+        'customer_products' => true,
     ];
 }
