@@ -105,7 +105,7 @@ class SearchController extends AppController
                 'contain' => [
                     'Prefectures', 
                     'CustomerProducts' => [
-                        'ProductTypes',
+                        'ProductTypes'
                     ],
                     'CustomerMetrics',
                     'CustomerScores',
@@ -129,7 +129,7 @@ class SearchController extends AppController
             ]; 
 
             $customers = $this->paginate($customerQuery, ['limit' => 20]);
-
+            // dd($customers->first());
             $this->set(compact('customers'));
         }
 
@@ -259,5 +259,26 @@ class SearchController extends AppController
         $response = $response->withDownload($filename);
         
         return $response->withStringBody($csv);
+    }
+
+    public function corporate()
+    {
+        $this->Authorization->skipAuthorization();
+        $requestParams = [];
+        $requestParams = $this->request->getQuery();
+        if (isset($requestParams['corporate_number'])) {
+    
+            $corporationsTable = $this->fetchTable('Corporations');
+           
+            $corporation = $corporationsTable->find()
+            ->where(['corporate_number' => $requestParams['corporate_number']])
+            ->first();
+
+            if ($corporation) {
+                $this->set(compact('corporation'));
+            }
+
+        }   
+                
     }
 }

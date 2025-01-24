@@ -190,7 +190,21 @@ $this->Form->setTemplates([
 <section class="mx-auto bg-white shadow-md rounded-lg overflow-hidden">
     <?php if (!empty($requestParams)): ?>
     <div class= "p-6">
-        <h2 class="text-2xl font-semibold mb-6">検索結果</h2>
+        <div class="flex justify-between">
+            <h2 class="text-2xl font-semibold mb-6">検索結果</h2>
+            <div class="flex">
+                <div class="flex items-center me-4">
+                    <input 
+                        id="company-info" 
+                        type="checkbox" 
+                        value="" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600"
+                        onclick="toggleColumnVisibility(this, 'company-info')"
+                    >
+                    <label for="company-info" class="ms-2 text-sm font-medium text-gray-900">企業情報</label>
+                </div>
+           </div>
+
+        </div>
         <?= $this->element('pagination') ?>
         <table id="dynamicTable" class="table-auto w-full border border-white my-5">
             <thead class="bg-primary-500 text-white">
@@ -210,41 +224,49 @@ $this->Form->setTemplates([
                     <th scope="col" class="px-4 py-2 border border-white">
                         求人確認
                     </th>
+
                     <th scope="col" class="px-4 py-2 border border-white">
+                        注意事項
+                    </th>
+                    
+                    
+                    <th scope="col" class="px-4 py-2 border border-white">
+                        製品情報
+
+                    </th>
+                 
+                    <th scope="col" class="company-info hidden px-4 py-2 border border-white">
                         <?= $this->element('sort_field', [
                             'sortField' => 'Prefectures.id',
                             'sortText' => '都道府県',
                         ]); ?>
                     </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
-                        最新のOB版
-
-                    </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
+                    <th scope="col" class="company-info hidden px-4 py-2 border border-white">
                         <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.employee_number',
                             'sortText' => '従業員数',
                         ]); ?>
                     </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
+                    <th scope="col" class="company-info hidden px-4 py-2 border border-white">
                         <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.capital',
                             'sortText' => '資本金',
                         ]); ?>
                     </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
+                    <th scope="col" class="company-info hidden px-4 py-2 border border-white">
                         <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.revenue',
                             'sortText' => '年商',
                         ]); ?>
                         
                     </th>
-                    <th scope="col" class="px-4 py-2 border border-white">
+                    <th scope="col" class="company-info hidden px-4 py-2 border border-white">
                         <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.industry_id',
                             'sortText' => '親業種',
                         ]); ?>
-                    </th>       
+                    </th>    
+                       
                     <th scope="col" class="px-4 py-2 border border-white">
                         メトリクス
                     </th>
@@ -267,11 +289,13 @@ $this->Form->setTemplates([
                             <?= $customer->id ?>
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">
-                            <a 
-                                href="<?= $customer->customer_profile->homepage ?? '#' ?>" 
-                                class="<?= $customer->customer_profile->homepage ? 'inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline' : '' ?>">
-                                    <?= $customer->name ?>
-                            </a>
+                            <div>
+                                <a 
+                                    href="<?= $customer->customer_profile->homepage ?? '#' ?>" 
+                                    class="<?= $customer->customer_profile->homepage ? 'inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline' : '' ?>">
+                                        <?= $customer->name ?>
+                                </a>
+                            </div>
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?php if($customer->customer_profile->corporate_number): ?>
@@ -285,26 +309,59 @@ $this->Form->setTemplates([
                                 N/A
                             <?php endif; ?>
                         </td>
+
                         <td scope="row" class="px-4 py-2 border border-white text-center">
+                            <a 
+                                data-title="<?= $customer->name ?>"
+                                data-description="<?= $customer->name ?>注意事項"
+                                data-remarks="<?= h('一般注意事項@'. ($customer->remarks ?? '')) ?>"
+                                data-support-remarks="<?= h('CS注意事項@'. ($customer->support_remarks ?? '')) ?>"
+                                data-support-memo="<?= h('CS対応メモ@'.($customer->support_memo ?? '')) ?>"
+                                onclick="openModal(this, displayData)"
+                                class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                詳細
+                            </a>
+                        </td>
+                       
+                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                            <ul>
+                                <?php 
+                                if (!empty($customer->customer_products)):
+                                    foreach ($customer->customer_products as $customer_product):
+                                ?>
+                                    <li>
+                                        <a href="" target="_blank"><?= $customer_product->product_type->short_name ?></a>
+                                        <?php if ($customer_product->cancel_flg == 0): ?>
+                                            <span class="bg-primary-500 text-white">契約中</span>
+                                        <?php elseif ($customer_product->cancel_flg == 1): ?>
+                                            <span class="bg-red-500 text-white">キャンセル</span>
+                                        <?php else: ?>
+                                            <span class="bg-red-500 text-white">解約</span>
+                                        <?php endif; ?>
+                                    </li>
+                                <?php 
+                                endforeach;
+                                endif;
+                                ?>
+                            </ul>
+                        </td>
+
+                        <td scope="row" class="company-info hidden px-4 py-2 border border-white text-center">
                             <?= $customer->prefecture->name  ?? 'N/A' ?>
                         </td>
-                        <td scope="row" class="px-4 py-2 border border-white text-center">
-                            <?= !empty($customer->customer_products) 
-                                ? $customer->customer_products[count($customer->customer_products) - 1]->product_type->name 
-                                : 'N/A' ?>
-                        </td>
-                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                        <td scope="row" class="company-info hidden px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->employee_number ?? 'N/A' ?>
                         </td>
-                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                        <td scope="row" class="company-info hidden px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->capital ? $this->Number->format($customer->customer_profile->capital) : 'N/A' ?>
                         </td>
-                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                        <td scope="row" class="company-info hidden px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->revenue ? $this->Number->format($customer->customer_profile->revenue) : 'N/A' ?>
                         </td>
-                        <td scope="row" class="px-4 py-2 border border-white text-center">
+                        <td scope="row" class="company-info hidden px-4 py-2 border border-white text-center">
                             <?= $customer->customer_profile->industry->name ?? 'N/A' ?>
                         </td>
+                        
                         <td scope="row" class="px-4 py-2 border border-white text-center">
                             <a 
                                 data-title="<?= $customer->name ?>"
@@ -316,6 +373,7 @@ $this->Form->setTemplates([
                                 data-other-license-count="<?= $customer->customer_metric->other_license_count ?? '' ?>"
                                 data-in-contact-count="<?= $customer->customer_metric->in_contact_count ?? '' ?>"
                                 data-out-contact-count="<?= $customer->customer_metric->out_contact_count ?? '' ?>"
+                                data-verup-count="<?= $customer->customer_metric->verup_count ?? '' ?>"
                                 onclick="openModal(this, setMetrics)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
                                 詳細
@@ -328,10 +386,9 @@ $this->Form->setTemplates([
                                 <?php foreach($customer->customer_scores as $customer_score): ?>
                                     data-indicator-<?= $customer_score->indicator_id ?>="<?= $indicators[$customer_score->indicator_id] . '@' . ($customer_score->indicator_score ?? '') ?>"
                                 <?php endforeach; ?>
-                                onclick="openModal(this, setIndicators)"
+                                onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
                                 詳細
-                                
                             </a>
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">
@@ -398,12 +455,14 @@ function setMetrics(button) {
     const orderCount = button.getAttribute('data-oricoh-license-count');
     const oricohLicenseCount = button.getAttribute('data-oricoh-license-count');
     const otherLicenseCount = button.getAttribute('data-other-license-count');
+    const verupCount = button.getAttribute('data-verup-count');
     const inContactCount = button.getAttribute('data-in-contact-count');
     const outContactCount = button.getAttribute('data-out-contact-count');
     
     modalContent.innerHTML = `
         <p class="mb-4">${description}</p>
         <p><span class="font-bold">受注回数：</span>${orderCount}</p>
+        <p><span class="font-bold">バージョンアップ回数：</span>${verupCount}</p>
         <p><span class="font-bold">OBライセンス数：</span>${oricohLicenseCount}</p>
         <p><span class="font-bold">他ライセンス数：</span>${otherLicenseCount}</p>
         <p><span class="font-bold">お問い合わせの着信回数：</span>${inContactCount}</p>
@@ -411,7 +470,7 @@ function setMetrics(button) {
     `;
 }
 
-function setIndicators(button) {
+function displayData(button) {
     const modalContent = document.getElementById('modalContent');
     
     modalContent.innerHTML = '';
@@ -428,8 +487,25 @@ function setIndicators(button) {
         
         const [label, content] = value.split("@");
         
-        modalContent.innerHTML += `<p><span class="font-bold">${label}：</span>${content}</p>`;
+        modalContent.innerHTML += `<p><span class="font-bold">${label}：</span><span>${content}</span></p>`;
     }
+}
+
+
+/**
+ * Toggles the visibility of table columns based on checkbox state.
+ * @param {HTMLInputElement} checkbox - The checkbox element.
+ * @param {string} className - The class of the columns to toggle.
+ */
+function toggleColumnVisibility(checkbox, className) {
+    const elements = document.querySelectorAll(`.${className}`);
+    elements.forEach(element => {
+        if (checkbox.checked) {
+            element.classList.remove('hidden'); // Show the column
+        } else {
+            element.classList.add('hidden'); // Hide the column
+        }
+    });
 }
 </script>
 
