@@ -58,6 +58,10 @@ class CustomerProductsTable extends Table
             'foreignKey' => 'product_type_id',
             'joinType' => 'INNER',
         ]);
+        $this->belongsTo('OricohSeries', [
+            'foreignKey' => 'product_type_id',
+            'joinType' => 'INNER',
+        ]);
         $this->belongsTo('Industries', [
             'foreignKey' => 'industry_id',
         ]);

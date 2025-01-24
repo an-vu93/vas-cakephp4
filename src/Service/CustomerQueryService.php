@@ -29,9 +29,9 @@ class CustomerQueryService
                     'Industries',
                     'SubIndustries',
                 ],
-                'CustomerProducts' => [
-                    'ProductTypes',
-                ],
+               'CustomerProducts' => function ($q) {
+                    return $q->innerJoinWith('ProductTypes.OricohSeries');
+                },
                 'Prefectures', 
                 'CustomerMetrics',
                 'CustomerScores',
@@ -40,6 +40,7 @@ class CustomerQueryService
 
         $query->enableAutoFields(true);
 
+        $query->where(['Customers.own_flg' => 0]);
         // Apply filters based on request parameters
         $query = $this->applyFilters($query, $requestParams);
         

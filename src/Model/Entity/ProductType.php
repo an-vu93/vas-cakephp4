@@ -32,6 +32,6 @@ class ProductType extends Entity
         'sale_state_flg' => true,
         'customer_products' => true,
         'oricoh_series' => true,
-        'product_type_customer_contact' => true,
+        // 'product_type_customer_contact' => true,
     ];
 }

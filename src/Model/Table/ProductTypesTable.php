@@ -45,7 +45,7 @@ class ProductTypesTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('CustomerOrders', [
+        $this->hasMany('CustomerProducts', [
             'foreignKey' => 'product_type_id',
         ]);
         $this->hasMany('OricohSeries', [

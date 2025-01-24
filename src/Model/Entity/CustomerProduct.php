@@ -47,5 +47,6 @@ class CustomerProduct extends Entity
         'product_type' => true,
         'industry' => true,
         'sub_industry' => true,
+        'oricoh_series' => true
     ];
 }
