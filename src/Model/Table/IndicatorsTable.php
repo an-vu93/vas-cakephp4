@@ -104,6 +104,7 @@ class IndicatorsTable extends Table
     {
         // Skip if this is triggered by the scoring service itself
         if (isset($options['skipScoring']) && $options['skipScoring'] === true) {
+            dd("skipped");
             return;
         }
 
@@ -117,6 +118,7 @@ class IndicatorsTable extends Table
         if ($shouldUpdateScores) {
             try {
                 $scoringService = new ScoringService();
+
                 $scoringService->updateScorePerIndicator($entity->id);
                
             } catch (\Exception $e) {

@@ -36,7 +36,7 @@ $this->assign('buttonLink', $this->Url->build([
         <div class="flex mb-5 items-center">
             <div class="mr-4 text-lg font-medium text-gray-900">有効設定</div>
             <div class="flex items-center space-x-4">
-                <?= $this->Form->radio('public_flg', [
+                <?= $this->Form->radio('active', [
                     ['value' => 1, 'text' => '有効', 'label' => ['class' => 'border border-gray-200 w-32 py-4 text-sm font-medium text-gray-900'], 'class' => 'w-10 h-4 text-blue-600 bg-gray-100 border-gray-300'],
                     ['value' => 0, 'text' => '無効', 'label' => ['class' => 'border border-gray-200 w-32 py-4 text-sm font-medium text-gray-900'], 'class' => 'w-10 h-4 text-blue-600 bg-gray-100 border-gray-300'],
                 ], [

@@ -10,6 +10,7 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $name
+ * @property string $short_name
  * @property string|null $query
  * @property int $active
  * @property int $percentile_20
@@ -35,6 +36,7 @@ class Indicator extends Entity
      */
     protected $_accessible = [
         'name' => true,
+        'short_name' => true,
         'query' => true,
         'active' => true,
         'percentile_20' => true,

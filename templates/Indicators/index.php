@@ -5,7 +5,7 @@ $this->assign('title', 'ツール一覧');
 $this->assign('buttonLink', $this->Url->build([
     'controller' => 'Indicators',
     'action' => 'add',
-]))
+]));
 ?>
 
 <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
