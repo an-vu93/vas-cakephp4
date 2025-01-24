@@ -29,7 +29,7 @@ class ScoringService
      * @param int $indicatorId
      * @return bool
      */
-    function getPercentiles($indicatorId): array
+    public function getPercentiles($indicatorId): array
     {
         $indicators = TableRegistry::getTableLocator()->get('Indicators');
         $customerMetrics = TableRegistry::getTableLocator()->get('CustomerMetrics');
@@ -148,7 +148,7 @@ class ScoringService
                         $scoreEntity = $existingScores[$key];
                         $this->customerScores->patchEntity($scoreEntity, [
                             'indicator_score' => $newScore['score'],
-                            'metric_value' => $newScore['value'],
+                           
                             'modified_at' => $now
                         ]);
                     } else {
@@ -157,7 +157,7 @@ class ScoringService
                             'customer_id' => $customerId,
                             'indicator_id' => $indicator->id,
                             'indicator_score' => $newScore['score'],
-                            'metric_value' => $newScore['value'],
+                           
                             'created_at' => $now,
                             'modified_at' => $now
                         ]);
