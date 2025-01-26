@@ -157,7 +157,6 @@ class SearchController extends AppController
             '顧客ID',
             '顧客名',
             '都道府県',
-            '最新のOB版',
             '従業員数',
             '資本金',
             '年商',
@@ -208,9 +207,6 @@ class SearchController extends AppController
                 $customer->id,
                 $customer->name,
                 $customer->prefecture->name ?? '',
-                !empty($customer->customer_products) 
-                    ? $customer->customer_products[count($customer->customer_products) - 1]->product_type->name 
-                    : '',
                 $customer->customer_profile->employee_number ?? '',
                 $customer->customer_profile->capital ?? '',
                 $customer->customer_profile->revene ?? '',

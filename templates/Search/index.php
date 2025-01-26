@@ -330,7 +330,7 @@ $this->Form->setTemplates([
                                     foreach ($customer->customer_products as $customer_product):
                                 ?>
                                     <li>
-                                        <a href="" target="_blank"><?= $customer_product->product_type->short_name ?></a>
+                                        <a href="<?= $customer_product->site_url ?>" target="_blank"><?= $customer_product->product_type->short_name ?></a>
                                         <?php if ($customer_product->cancel_flg == 0): ?>
                                             <span class="bg-primary-500 text-white">契約中</span>
                                         <?php elseif ($customer_product->cancel_flg == 1): ?>
@@ -366,15 +366,16 @@ $this->Form->setTemplates([
                             <a 
                                 data-title="<?= $customer->name ?>"
                                 data-description="<?= $customer->name ?>様のメトリクス"
-                                data-first-order-date="<?= $customer->customer_metric->first_order_date ?? '' ?>"
-                                data-last-order-date="<?= $customer->customer_metric->last_order_date ?? '' ?>"
-                                data-order-count="<?= $customer->customer_metric->order_count ?? '' ?>"
-                                data-oricoh-license-count="<?= $customer->customer_metric->oricoh_license_count ?? '' ?>"
-                                data-other-license-count="<?= $customer->customer_metric->other_license_count ?? '' ?>"
-                                data-in-contact-count="<?= $customer->customer_metric->in_contact_count ?? '' ?>"
-                                data-out-contact-count="<?= $customer->customer_metric->out_contact_count ?? '' ?>"
-                                data-verup-count="<?= $customer->customer_metric->verup_count ?? '' ?>"
-                                onclick="openModal(this, setMetrics)"
+                                data-first-order-date="<?= '最初の受注日@' . ($customer->customer_metric->first_order_date ?? '') ?>"
+                                data-last-order-date="<?= '最近の受注日@' . ($customer->customer_metric->last_order_date ?? '') ?>"
+                                data-order-count="<?= '受注回数（保守のみを除く）@' . ($customer->customer_metric->order_count ?? '') ?>"
+                                data-oricoh-license-count="<?= 'OBライセンス数@' . ($customer->customer_metric->oricoh_license_count ?? '') ?>"
+                                data-other-license-count="<?= 'OB以外のライセンス数@' . ($customer->customer_metric->other_license_count ?? '') ?>"
+                                data-verup-count="<?= 'バージョンアップ回数@' . ($customer->customer_metric->verup_count ?? '') ?>"
+                                data-in-contact-count="<?= 'お問い合わせの着信回数@' . ($customer->customer_metric->in_contact_count ?? '') ?>"
+                                data-out-contact-count="<?= 'お問い合わせの送信回数@' . ($customer->customer_metric->out_contact_count ?? '') ?>"
+                    
+                                onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
                                 詳細
                             </a>
@@ -444,30 +445,6 @@ function closeModal() {
     
     // Restore body scrolling
     document.body.style.overflow = 'auto';
-}
-
-function setMetrics(button) {
-    const modalContent = document.getElementById('modalContent');
-    
-    modalContent.innerHTML = '';
-
-    const description = button.getAttribute('data-description');
-    const orderCount = button.getAttribute('data-oricoh-license-count');
-    const oricohLicenseCount = button.getAttribute('data-oricoh-license-count');
-    const otherLicenseCount = button.getAttribute('data-other-license-count');
-    const verupCount = button.getAttribute('data-verup-count');
-    const inContactCount = button.getAttribute('data-in-contact-count');
-    const outContactCount = button.getAttribute('data-out-contact-count');
-    
-    modalContent.innerHTML = `
-        <p class="mb-4">${description}</p>
-        <p><span class="font-bold">受注回数：</span>${orderCount}</p>
-        <p><span class="font-bold">バージョンアップ回数：</span>${verupCount}</p>
-        <p><span class="font-bold">OBライセンス数：</span>${oricohLicenseCount}</p>
-        <p><span class="font-bold">他ライセンス数：</span>${otherLicenseCount}</p>
-        <p><span class="font-bold">お問い合わせの着信回数：</span>${inContactCount}</p>
-        <p><span class="font-bold">お問い合わせの着信回数：</span>${outContactCount}</p>
-    `;
 }
 
 function displayData(button) {
