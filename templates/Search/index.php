@@ -330,13 +330,22 @@ $this->Form->setTemplates([
                                     foreach ($customer->customer_products as $customer_product):
                                 ?>
                                     <li>
-                                        <a href="<?= $customer_product->site_url ?>" target="_blank"><?= $customer_product->product_type->short_name ?></a>
+                                        <a 
+                                            href="<?= 'http://192.168.0.31/in_house/tech_manager/goods/add/' . $customer->id . '/' . $customer_product->id ?>" 
+                                            target="_blank"
+                                            class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline"    
+                                        >
+                                            <?= $customer_product->product_type->short_name ?>
+                                        </a>
                                         <?php if ($customer_product->cancel_flg == 0): ?>
                                             <span class="bg-primary-500 text-white">契約中</span>
                                         <?php elseif ($customer_product->cancel_flg == 1): ?>
                                             <span class="bg-red-500 text-white">キャンセル</span>
                                         <?php else: ?>
                                             <span class="bg-red-500 text-white">解約</span>
+                                        <?php endif; ?>
+                                        <?php if ($customer_product->shift_goods_flg == 1): ?>
+                                            <span class="bg-red-500 text-white">移行</span>
                                         <?php endif; ?>
                                     </li>
                                 <?php 
@@ -374,6 +383,8 @@ $this->Form->setTemplates([
                                 data-verup-count="<?= 'バージョンアップ回数@' . ($customer->customer_metric->verup_count ?? '') ?>"
                                 data-in-contact-count="<?= 'お問い合わせの着信回数@' . ($customer->customer_metric->in_contact_count ?? '') ?>"
                                 data-out-contact-count="<?= 'お問い合わせの送信回数@' . ($customer->customer_metric->out_contact_count ?? '') ?>"
+                                data-total-order-amount="<?= '受注金額合計@' . ($this->Number->format($customer->customer_metric->all_order_amount) ?? '') . '円' ?>"
+                                data-option-included-order-count="<?= 'オプションを含め製品数@' . ($customer->customer_metric->option_included_order_count ?? '') ?>"
                     
                                 onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
