@@ -30,7 +30,7 @@ class CustomerQueryService
                     'SubIndustries',
                 ],
                'CustomerProducts' => function ($q) {
-                    return $q->innerJoinWith('ProductTypes.OricohSeries');
+                    return $q->innerJoinWith('ProductTypes.OricohSeries')->order(['CustomerProducts.id' => 'DESC']);
                 },
                 'Prefectures', 
                 'CustomerMetrics',
