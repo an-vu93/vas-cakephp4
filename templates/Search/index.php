@@ -385,6 +385,9 @@ $this->Form->setTemplates([
                                 data-out-contact-count="<?= 'お問い合わせの送信回数@' . ($customer->customer_metric->out_contact_count ?? '') ?>"
                                 data-total-order-amount="<?= '受注金額合計@' . ($this->Number->format($customer->customer_metric->all_order_amount) ?? '') . '円' ?>"
                                 data-option-included-order-count="<?= 'オプションを含め製品数@' . ($customer->customer_metric->option_included_order_count ?? '') ?>"
+                                data-option-weekly-login-count="<?= '週間ログイン回数@' . ($customer->customer_metric->weekly_login_count ?? '0') ?>"
+                                data-option-weekly-edit-count="<?= '週間編集回数@' . ($customer->customer_metric->weekly_edit_count ?? '0') ?>"
+                                data-option-relationship-strength="<?= '顧客関係力@' . ($relationshipStatuses[$customer->customer_metric->relationship_strength] ?? '') ?>"
                     
                                 onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
@@ -395,8 +398,11 @@ $this->Form->setTemplates([
                             <a 
                                 data-title="<?= $customer->name ?>"
                                 data-description="<?= $customer->name ?>様の指標別の点数"
-                                <?php foreach($customer->customer_scores as $customer_score): ?>
+                                <?php foreach($customer->customer_scores as $customer_score): 
+                                    if (in_array($customer_score->indicator_id, $activeIndicatorIds)): 
+                                ?>
                                     data-indicator-<?= $customer_score->indicator_id ?>="<?= $indicators[$customer_score->indicator_id] . '@' . ($customer_score->indicator_score ?? '') ?>"
+                                        <?php endif; ?>
                                 <?php endforeach; ?>
                                 onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">

@@ -35,10 +35,18 @@ class SearchController extends AppController
         $customer = [];
         $requestParams = [];
         $requestParams = $this->request->getQuery();
-        
+        $activeIndicatorIds = [];
         $userActivityType = isset($requestParams['page']) ? 'ブラウジング' : '新検索';
         if (isset($requestParams['analysis_id'])) {
             $this->ActivityLog->logActivity($userActivityType, '以下の条件で検索が行われた: ' . json_encode($requestParams));
+            $indicatorWeightTable = $this->fetchTable('IndicatorWeights');
+            $activeIndicatorIds = $indicatorWeightTable->find()
+                ->select(['indicator_id']) 
+                ->where(['analysis_id' => $requestParams['analysis_id']])
+                ->extract('indicator_id')
+                ->toArray();     
+
+                $this->set(compact('activeIndicatorIds'));
         }
         
         $prefecturesTable = $this->fetchTable('Prefectures');
@@ -135,7 +143,17 @@ class SearchController extends AppController
 
         $dataSourceRef = '複数の外部データソースから取得され、統合された情報になります。<br>参照先（順番なし）：<br>・ハローワークインターネットサービス<br>・企業のホームページ<br>・gBizINFO';
         
-        $this->set(compact('requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'indicators', 'dataSourceRef'));
+        $relationshipStatuses = [
+            'レベル- 関係力未確認',
+            'レベル1 決裁者不明。お客様が弊社を認識させれていない。',
+            'レベル2 担当者と表面レベルで話ができる。お客様が弊社の認知はある。',
+            'レベル3 担当者から、覚えられている。',
+            'レベル4 担当者から、バイネームで依頼が来る。決裁者との関係力が課題。',
+            'レベル5 決裁者とも話ができ、相手からもバイネームで依頼が来る。'
+        ];
+
+
+        $this->set(compact('requestParams', 'prefectures', 'salespeople', 'industries', 'subIndustries', 'productTypes', 'analyses', 'indicators', 'dataSourceRef', 'relationshipStatuses'));
     }
 
     public function export() 
