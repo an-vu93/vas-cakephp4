@@ -299,15 +299,21 @@ $this->Form->setTemplates([
                         </td>
                         <td scope="row" class="px-4 py-2 border border-white text-center">
                             <?php if($customer->customer_profile->corporate_number): ?>
-                                <a  href="https://www.hellowork.mhlw.go.jp/kensaku/GECA110010.do?screenId=GECA110010&action=searchShokuba&hojinNo=<?= $customer->customer_profile->corporate_number ?>&shokuba=1&kyujinShurui=1"
-                                    target="blank"
+                                <a 
                                     class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline"
+                                    data-title="<?= $customer->name ?>"
+                                    data-description="<?= $customer->name ?>様のメトリクス"
+                                    data-customer-id="<?= $customer->id ?>"
+                                    data-hw-business-number="<?= $customer->customer_profile->hw_business_number ?>"
+                                    data-corporate-number="<?= $customer->customer_profile->corporate_number ?>"
+                                    onclick="openModal(this, checkHellowork)"
                                 >
                                     詳細
-                                </a>
+                            </a>
                             <?php else: ?>
                                 N/A
                             <?php endif; ?>
+                            
                         </td>
 
                         <td scope="row" class="px-4 py-2 border border-white text-center">
@@ -385,8 +391,8 @@ $this->Form->setTemplates([
                                 data-out-contact-count="<?= 'お問い合わせの送信回数@' . ($customer->customer_metric->out_contact_count ?? '') ?>"
                                 data-total-order-amount="<?= '受注金額合計@' . ($this->Number->format($customer->customer_metric->all_order_amount) ?? '') . '円' ?>"
                                 data-option-included-order-count="<?= 'オプションを含め製品数@' . ($customer->customer_metric->option_included_order_count ?? '') ?>"
-                                data-option-weekly-login-count="<?= '週間ログイン回数@' . ($customer->customer_metric->weekly_login_count ?? '0') ?>"
-                                data-option-weekly-edit-count="<?= '週間編集回数@' . ($customer->customer_metric->weekly_edit_count ?? '0') ?>"
+                                data-option-weekly-login-count="<?= '週間ログイン回数@' . ($customer->customer_metric->week_login_count ?? '0') ?>"
+                                data-option-weekly-edit-count="<?= '週間編集回数@' . ($customer->customer_metric->week_edit_count ?? '0') ?>"
                                 data-option-relationship-strength="<?= '顧客関係力@' . ($relationshipStatuses[$customer->customer_metric->relationship_strength] ?? '') ?>"
                     
                                 onclick="openModal(this, displayData)"
@@ -424,8 +430,8 @@ $this->Form->setTemplates([
     <?php endif; ?>
 </section>
 
-<div id="modalContainer" class="fixed inset-0 z-50 hidden overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
+<div id="modalContainer" class="fixed inset-0 z-50 hidden  bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-lg max-h-96 w-full mx-4 overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modalTitle" class="text-xl font-bold">Details</h3>
                 <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
@@ -435,19 +441,19 @@ $this->Form->setTemplates([
                 </button>
             </div>
             <div id="modalContent" class="mt-4">
-                Loading...
             </div>
         </div>
     
 </div>
 
 <script>
-function openModal(button, setFunction) {
+async function openModal(button, setFunction) {
     
     const title = button.getAttribute('data-title');
     document.getElementById('modalTitle').textContent = title;
     
-    setFunction(button);
+    // Wait for the setFunction to complete
+    await setFunction(button);
 
     // Show modal
     document.getElementById('modalContainer').classList.remove('hidden');
@@ -457,8 +463,9 @@ function openModal(button, setFunction) {
 }
 
 function closeModal() {
-    // Hide modal
+
     document.getElementById('modalContainer').classList.add('hidden');
+    document.getElementById('modalContent').innerHTML = "";
     
     // Restore body scrolling
     document.body.style.overflow = 'auto';
@@ -495,11 +502,77 @@ function toggleColumnVisibility(checkbox, className) {
     const elements = document.querySelectorAll(`.${className}`);
     elements.forEach(element => {
         if (checkbox.checked) {
-            element.classList.remove('hidden'); // Show the column
+            element.classList.remove('hidden'); 
         } else {
-            element.classList.add('hidden'); // Hide the column
-        }
+            element.classList.add('hidden'); 
     });
+}
+
+async function checkHellowork(button) {
+    // Extract data attributes from the clicked element
+    const customerId = button.getAttribute('data-customer-id');
+    const hwBusinessNumber = button.getAttribute('data-hw-business-number');
+    const corporateNumber = button.getAttribute('data-corporate-number');
+
+    const params = new URLSearchParams({
+        customer_id: customerId,
+        corporate_number: corporateNumber,
+    });
+
+    const url = `/python-app/check-hellowork2?${params.toString()}`;
+    
+    // Show loading state
+    modalContent.innerHTML = `<p>データを取得中です...</p>`;
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const json = await response.json();
+
+        // Build modal content
+        let content = `<p><span class="font-bold">合計求人件数：</span><span>${json.data["number_of_job_openings"]}</span></p>`;
+        
+        const jobTypeInfoTemplate = (jobType, targetContent) => {
+            if (json.errors[jobType["key"]].length === 0) {
+                console.log(json.data)
+                console.log(json.data["job_type"][jobType["key"]])
+                detail_url = "";
+                if (json.data["job_type"][jobType["key"]]["detail_url"] !== "") {
+                    detail_url = `<a 
+                            href="${json.data["job_type"][jobType["key"]]["detail_url"]}"
+                            action="_blank"
+                            class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline"
+                        >
+                            （参照先）
+                        </a>`
+                } 
+
+                targetContent += `<p><span class="font-bold">${jobType["value"]}件数：</span><span>${json.data["job_type"][jobType["key"]]["count"]}</span>${detail_url}</p>`;
+                targetContent += `<p><span class="font-bold ml-6">給料レンジ：</span></p>`;
+                targetContent += `<p><span class="font-bold ml-8">上レンジ：</span><span>${json.data["job_type"][jobType["key"]]["salary_range"]["higher_range"]}</span></p>`;
+                targetContent += `<p><span class="font-bold ml-8">下レンジ：</span><span>${json.data["job_type"][jobType["key"]]["salary_range"]["lower_range"]}</span></p>`;
+            } else {
+                targetContent += `<p><span class="font-bold">フルタイム件数：</span><span>${json.errors[jobType["key"]].join(", ")}</span></p>`;
+            }
+      
+
+            return targetContent;
+        }
+        
+        content = jobTypeInfoTemplate({key: "fulltime", value:"フルタイム"}, content);
+        content = jobTypeInfoTemplate({key: "parttime", value:"パート"}, content);
+        
+        // Update modal content
+        modalContent.innerHTML = content;
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        modalContent.innerHTML = `<p>データの取得中にエラーが発生しました。</p>`;
+    }
 }
 </script>
 
