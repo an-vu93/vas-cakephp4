@@ -46,6 +46,20 @@ $this->assign('buttonLink', $this->Url->build([
             </div>
         </div>
 
+        <div class="w-full max-w-4xl p-4 bg-white rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">指標を構成するメトリクスの分布図</h2>
+            <div class="relative">
+                <canvas id="distribution-graph" 
+                    data-url="<?= $this->Url->build([
+                        'controller' => 'Indicators',
+                        'action' => 'get-related-metrics',
+                        $indicator->id
+                    ]) ?>"
+                >
+                </canvas>
+            </div>
+        </div>
+
         <table id="dynamicTable" class="table-auto w-full border border-white mt-10 mb-5">
             <thead class="bg-primary-500 text-white">
                 <tr>
@@ -105,7 +119,7 @@ $this->assign('buttonLink', $this->Url->build([
                                 'controller' => 'Indicators',
                                 'action' => 'calculate',
                                 $indicator->id
-                            ])?>"
+                            ]) ?>"
                         >
                             参考値</a>
                     </td>
@@ -120,6 +134,8 @@ $this->assign('buttonLink', $this->Url->build([
     <?= $this->Form->end() ?>
 </div>
 
+<!-- chart.js -->
+<?= $this->Html->script('https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js') ?>
 
 <script>
     document.getElementById('calculate-indicator-btn').addEventListener('click', async function () {
@@ -152,6 +168,92 @@ $this->assign('buttonLink', $this->Url->build([
         console.error('Error fetching indicator data:', error);
        
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const distributionGraph = document.getElementById('distribution-graph');
+    const ctx = distributionGraph.getContext('2d');
+    ctx.canvas.width = 500;
+    ctx.canvas.height = 500;
+    const url = distributionGraph.getAttribute('data-url');
+    
+    fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(response => {
+            const data = response.data;
+            
+            const mertricValues = data.metric_values;
+            const occurences = data.occurences;
+
+            // Find the min and max values in mertricValues to determine bin ranges
+            const min = Math.min(...mertricValues);
+            const max = Math.max(...mertricValues);
+            const binSize = (max - min) / 5;
+
+            // Initialize bins
+            const bins = Array(5).fill(0);
+            const binLabels = [];
+
+            // Populate bin labels
+            for (let i = 0; i < 5; i++) {
+                const lowerBound = Math.round(min + i * binSize);
+                const upperBound = Math.round(min + (i + 1) * binSize);
+                binLabels.push(`${lowerBound}-${upperBound}`);
+            }
+
+             // Aggregate data into bins
+             mertricValues.forEach((value, index) => {
+                const binIndex = Math.min(
+                    Math.floor((value - min) / binSize),
+                    9 // Ensure values at max fall into the last bin
+                );
+                bins[binIndex] += occurences[index];
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: binLabels,
+                    datasets: [{
+                        label: '顧客数',
+                        data: bins,
+                        backgroundColor: '#4f46e5',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: (items) => `${items[0].label} メトリックス値`,
+                                label: (item) => `${item.formattedValue} 顧客数`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'メトリックス値'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '顧客数'
+                            }
+                        }
+                    }
+                }
+            });
+        });
 });
 
 </script>

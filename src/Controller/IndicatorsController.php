@@ -139,4 +139,34 @@ class IndicatorsController extends AppController
         return $this->response;
     }
 
+    public function getRelatedMetrics($id)
+    {
+        $this->Authorization->skipAuthorization();
+        $service = new ScoringService();
+   
+        try {
+          
+            $results = $service->getGraphData($id);
+
+            if ($results) {
+                $this->response = $this->response
+                    ->withStatus(200, 'OK')
+                    ->withType('application/json')
+                    ->withStringBody(json_encode(['success' => true, 'data' => $results]));
+            } else {
+                $this->response = $this->response
+                    ->withStatus(400)
+                    ->withType('application/json')
+                    ->withStringBody(json_encode(['success' => false, 'message' => 'Failed to calculate metric scores.']));
+            }
+        } catch (\Exception $e) {
+            $this->response = $this->response
+                ->withStatus(500)
+                ->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => $e->getMessage()]));
+        }
+
+        return $this->response;
+    }
+
 }

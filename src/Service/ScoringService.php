@@ -18,24 +18,21 @@ class ScoringService
     
     public function __construct()
     {
-        $this->indicators = TableRegistry::getTableLocator()->get('Indicators');
-        $this->customerMetrics = TableRegistry::getTableLocator()->get('CustomerMetrics');
-        $this->customerScores = TableRegistry::getTableLocator()->get('CustomerScores');
+        $this->indicatorsTable = TableRegistry::getTableLocator()->get('Indicators');
+        $this->customerMetricsTable = TableRegistry::getTableLocator()->get('CustomerMetrics');
+        $this->customerScoresTable = TableRegistry::getTableLocator()->get('CustomerScores');
     }
 
     /**
-     * Calculate percentiles for a given indicator
+     * Get the metric data of a given indicator for constructing distribution graph
      *
      * @param int $indicatorId
-     * @return bool
+     * @return array
      */
-    public function getPercentiles($indicatorId): array
+    public function getGraphData($indicatorId): array
     {
-        $indicators = TableRegistry::getTableLocator()->get('Indicators');
-        $customerMetrics = TableRegistry::getTableLocator()->get('CustomerMetrics');
-        
         // Get the indicator configuration
-        $indicator = $indicators->get($indicatorId);
+        $indicator = $this->indicatorsTable->get($indicatorId);
         
         // The query field now contains the metric calculation configuration
         // Example: {"metric": "license_count", "type": "direct"}
@@ -46,7 +43,49 @@ class ScoringService
             throw new \RuntimeException('Invalid indicator configuration');
         }
 
-        $percentiles = $this->calculateDistributionThresholds($customerMetrics, $config);
+        $histogram = [];
+
+        $query = $this->buildMetricQuery($this->customerMetricsTable, $config);
+ 
+        $results = $query->disableHydration()->all()->toArray();
+        $metricsValues = array_column($results, 'metric');
+
+        // Count occurrences of each metric value
+        $occurences = array_count_values($metricsValues);
+        if (empty($occurences)) {
+            throw new \RuntimeException('No scores found for this indicator');
+        }
+        ksort($occurences);
+      
+        $chartData = [
+            'metric_values' => array_keys($occurences), 
+            'occurences' => array_values($occurences), 
+        ];
+
+        return $chartData;
+    }
+
+    /**
+     * Calculate percentiles for a given indicator
+     *
+     * @param int $indicatorId
+     * @return array
+     */
+    public function getPercentiles($indicatorId): array
+    {
+        // Get the indicator configuration
+        $indicator = $this->indicatorsTable->get($indicatorId);
+        
+        // The query field now contains the metric calculation configuration
+        // Example: {"metric": "license_count", "type": "direct"}
+        // or: {"metric": "order_span", "type": "date_diff", "from": "first_order_date", "to": "last_order_date"}
+        $config = json_decode($indicator->query, true);
+        
+        if (!$config || !isset($config['metric'])) {
+            throw new \RuntimeException('Invalid indicator configuration');
+        }
+
+        $percentiles = $this->calculateDistributionThresholds($this->customerMetricsTable, $config);
 
         return $percentiles;
     }
@@ -56,12 +95,12 @@ class ScoringService
      */
     public function updateScorePerIndicator($indicatorId): bool
     {   
-        $indicator = $this->indicators->get($indicatorId);
+        $indicator = $this->indicatorsTable->get($indicatorId);
         
         // Process customers in chunks
         $page = 1;
         do {
-            $customerIds = $this->customerMetrics->find()
+            $customerIds = $this->customerMetricsTable->find()
                 ->select(['customer_id'])
                 ->limit(self::CHUNK_SIZE)
                 ->page($page)
@@ -86,7 +125,7 @@ class ScoringService
      */
     public function updateScoresPerCustomer($customerId): bool
     {
-        $activeIndicators = $this->indicators->find()
+        $activeIndicators = $this->indicatorsTable->find()
             ->where(['active' => 1])
             ->all();
             
@@ -100,21 +139,21 @@ class ScoringService
         }
 
         // Begin transaction
-        $connection = $this->customerScores->getConnection();
+        $connection = $this->customerScoresTable->getConnection();
         $connection->begin();
         
         try {
             $now = FrozenTime::now();
             
             // Get all relevant customer metrics at once
-            $customerMetrics = $this->customerMetrics->find()
+            $customerMetrics = $this->customerMetricsTable->find()
                 ->where(['customer_id IN' => $customerIds])
                 ->all()
                 ->indexBy('customer_id')
                 ->toArray();
             
             // Get existing scores for these customers and indicators
-            $existingScores = $this->customerScores->find()
+            $existingScores = $this->customerScoresTable->find()
                 ->where([
                     'customer_id IN' => $customerIds,
                     'indicator_id IN' => collection($indicators)->extract('id')->toList()
@@ -146,14 +185,14 @@ class ScoringService
                     if (isset($existingScores[$key])) {
                         // Update existing record
                         $scoreEntity = $existingScores[$key];
-                        $this->customerScores->patchEntity($scoreEntity, [
+                        $this->customerScoresTable->patchEntity($scoreEntity, [
                             'indicator_score' => $newScore['score'],
                            
                             'modified_at' => $now
                         ]);
                     } else {
                         // Create new record
-                        $scoreEntity = $this->customerScores->newEntity([
+                        $scoreEntity = $this->customerScoresTable->newEntity([
                             'customer_id' => $customerId,
                             'indicator_id' => $indicator->id,
                             'indicator_score' => $newScore['score'],
@@ -163,7 +202,7 @@ class ScoringService
                         ]);
                     }
                     
-                    $this->customerScores->saveOrFail($scoreEntity);
+                    $this->customerScoresTable->saveOrFail($scoreEntity);
                 }
             }
     
