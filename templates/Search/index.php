@@ -310,6 +310,11 @@ $this->Form->setTemplates([
                                 >
                                     詳細
                             </a>
+                            <?php if ($customer->customer_profile->hw_business_number): ?>
+                                <div>
+                                    <span class="bg-green-500 text-white">過去あり</span>
+                                </div>
+                            <?php endif; ?>
                             <?php else: ?>
                                 N/A
                             <?php endif; ?>
@@ -324,7 +329,8 @@ $this->Form->setTemplates([
                                 data-support-remarks="<?= h('CS注意事項@'. ($customer->support_remarks ?? '')) ?>"
                                 data-support-memo="<?= h('CS対応メモ@'.($customer->support_memo ?? '')) ?>"
                                 onclick="openModal(this, displayData)"
-                                class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline"
+                                >
                                 詳細
                             </a>
                         </td>
@@ -430,7 +436,7 @@ $this->Form->setTemplates([
     <?php endif; ?>
 </section>
 
-<div id="modalContainer" class="fixed inset-0 z-50 hidden  bg-black bg-opacity-50 flex items-center justify-center">
+<div id="modalContainer" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
         <div class="bg-white rounded-lg p-8 max-w-lg max-h-96 w-full mx-4 overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modalTitle" class="text-xl font-bold">Details</h3>
@@ -505,8 +511,10 @@ function toggleColumnVisibility(checkbox, className) {
             element.classList.remove('hidden'); 
         } else {
             element.classList.add('hidden'); 
+        }
     });
 }
+
 
 async function checkHellowork(button) {
     // Extract data attributes from the clicked element
@@ -534,12 +542,11 @@ async function checkHellowork(button) {
         const json = await response.json();
 
         // Build modal content
-        let content = `<p><span class="font-bold">合計求人件数：</span><span>${json.data["number_of_job_openings"]}</span></p>`;
+        let content = `<p><span class="font-bold">現在求人件数：</span><span>${json.data["number_of_job_openings"]}</span></p>`;
         
         const jobTypeInfoTemplate = (jobType, targetContent) => {
             if (json.errors[jobType["key"]].length === 0) {
-                console.log(json.data)
-                console.log(json.data["job_type"][jobType["key"]])
+           
                 detail_url = "";
                 if (json.data["job_type"][jobType["key"]]["detail_url"] !== "") {
                     detail_url = `<a 
@@ -551,12 +558,12 @@ async function checkHellowork(button) {
                         </a>`
                 } 
 
-                targetContent += `<p><span class="font-bold">${jobType["value"]}件数：</span><span>${json.data["job_type"][jobType["key"]]["count"]}</span>${detail_url}</p>`;
+                targetContent += `<p><span class="font-bold">・うちの${jobType["value"]}件数：</span><span>${json.data["job_type"][jobType["key"]]["count"]}</span>${detail_url}</p>`;
                 targetContent += `<p><span class="font-bold ml-6">給料レンジ：</span></p>`;
                 targetContent += `<p><span class="font-bold ml-8">上レンジ：</span><span>${json.data["job_type"][jobType["key"]]["salary_range"]["higher_range"]}</span></p>`;
                 targetContent += `<p><span class="font-bold ml-8">下レンジ：</span><span>${json.data["job_type"][jobType["key"]]["salary_range"]["lower_range"]}</span></p>`;
             } else {
-                targetContent += `<p><span class="font-bold">フルタイム件数：</span><span>${json.errors[jobType["key"]].join(", ")}</span></p>`;
+                targetContent += `<p><span class="font-bold">・うちの${jobType["value"]}件数：</span><span>${json.data["job_type"][jobType["key"]]["count"]}</span></p>`;
             }
       
 
