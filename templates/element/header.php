@@ -13,6 +13,13 @@
             </a>
             <div class="flex items-center lg:order-2">
                 <?php if (!($currentController === 'Users' && $currentAction === 'login')): ?>
+                    <a 
+                            href="<?= $this->Url->build([
+                                'controller' => 'search',
+                                'action' => 'corporate'
+                            ]) ?>" 
+                            class="text-white font-medium rounded-lg hover:bg-blue-500 text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2">法人番号検索へ
+                        </a>
                     <?php if($authUser['user_role'] !== 'general'): ?>
                         <a 
                             href="<?= $this->Url->build([
