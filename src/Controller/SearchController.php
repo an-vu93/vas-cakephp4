@@ -283,13 +283,21 @@ class SearchController extends AppController
         if (isset($requestParams['corporate_number'])) {
     
             $corporationsTable = $this->fetchTable('Corporations');
-           
+        
             $corporation = $corporationsTable->find()
-            ->where(['corporate_number' => $requestParams['corporate_number']])
-            ->first();
+                ->where(['corporate_number' => $requestParams['corporate_number']])
+                ->first();
+
+            $dsCustomer = false;
+
+            $customerProfilesTable = $this->fetchTable('CustomerProfiles');
+
+            $dsCustomer = $customerProfilesTable->find()
+                ->where(['corporate_number' => $requestParams['corporate_number']])
+                ->first();
 
             if ($corporation) {
-                $this->set(compact('corporation'));
+                $this->set(compact('corporation', 'requestParams', 'dsCustomer'));
             }
 
         }   

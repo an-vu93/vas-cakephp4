@@ -309,7 +309,7 @@ $this->Form->setTemplates([
                                     onclick="openModal(this, checkHellowork)"
                                 >
                                     詳細
-                            </a>
+                                </a>
                             <?php if ($customer->customer_profile->hw_business_number): ?>
                                 <div>
                                     <span class="bg-green-500 text-white">過去あり</span>
@@ -325,9 +325,9 @@ $this->Form->setTemplates([
                             <a 
                                 data-title="<?= $customer->name ?>"
                                 data-description="<?= $customer->name ?>注意事項"
-                                data-remarks="<?= h('一般注意事項@'. ($customer->remarks ?? '')) ?>"
-                                data-support-remarks="<?= h('CS注意事項@'. ($customer->support_remarks ?? '')) ?>"
-                                data-support-memo="<?= h('CS対応メモ@'.($customer->support_memo ?? '')) ?>"
+                                data-remarks="<?= h('一般注意事項@@@'. ($customer->remarks ?? '')) ?>"
+                                data-support-remarks="<?= h('CS注意事項@@@'. ($customer->support_remarks ?? '')) ?>"
+                                data-support-memo="<?= h('CS対応メモ@@@'.($customer->support_memo ?? '')) ?>"
                                 onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline"
                                 >
@@ -387,19 +387,19 @@ $this->Form->setTemplates([
                             <a 
                                 data-title="<?= $customer->name ?>"
                                 data-description="<?= $customer->name ?>様のメトリクス"
-                                data-first-order-date="<?= '最初の受注日@' . ($customer->customer_metric->first_order_date ?? '') ?>"
-                                data-last-order-date="<?= '最近の受注日@' . ($customer->customer_metric->last_order_date ?? '') ?>"
-                                data-order-count="<?= '受注回数（保守のみを除く）@' . ($customer->customer_metric->order_count ?? '') ?>"
-                                data-oricoh-license-count="<?= 'OBライセンス数@' . ($customer->customer_metric->oricoh_license_count ?? '') ?>"
-                                data-other-license-count="<?= 'OB以外のライセンス数@' . ($customer->customer_metric->other_license_count ?? '') ?>"
-                                data-verup-count="<?= 'バージョンアップ回数@' . ($customer->customer_metric->verup_count ?? '') ?>"
-                                data-in-contact-count="<?= 'お問い合わせの着信回数@' . ($customer->customer_metric->in_contact_count ?? '') ?>"
-                                data-out-contact-count="<?= 'お問い合わせの送信回数@' . ($customer->customer_metric->out_contact_count ?? '') ?>"
-                                data-total-order-amount="<?= '受注金額合計@' . ($this->Number->format($customer->customer_metric->all_order_amount) ?? '') . '円' ?>"
-                                data-option-included-order-count="<?= 'オプションを含め製品数@' . ($customer->customer_metric->option_included_order_count ?? '') ?>"
-                                data-option-weekly-login-count="<?= '週間ログイン回数@' . ($customer->customer_metric->week_login_count ?? '0') ?>"
-                                data-option-weekly-edit-count="<?= '週間編集回数@' . ($customer->customer_metric->week_edit_count ?? '0') ?>"
-                                data-option-relationship-strength="<?= '顧客関係力@' . ($relationshipStatuses[$customer->customer_metric->relationship_strength] ?? '') ?>"
+                                data-first-order-date="<?= '最初の受注日@@@' . ($customer->customer_metric->first_order_date ?? '') ?>"
+                                data-last-order-date="<?= '最近の受注日@@@' . ($customer->customer_metric->last_order_date ?? '') ?>"
+                                data-order-count="<?= '受注回数（保守のみを除く）@@@' . ($customer->customer_metric->order_count ?? '') ?>"
+                                data-oricoh-license-count="<?= 'OBライセンス数@@@' . ($customer->customer_metric->oricoh_license_count ?? '') ?>"
+                                data-other-license-count="<?= 'OB以外のライセンス数@@@' . ($customer->customer_metric->other_license_count ?? '') ?>"
+                                data-verup-count="<?= 'バージョンアップ回数@@@' . ($customer->customer_metric->verup_count ?? '') ?>"
+                                data-in-contact-count="<?= 'お問い合わせの着信回数@@@' . ($customer->customer_metric->in_contact_count ?? '') ?>"
+                                data-out-contact-count="<?= 'お問い合わせの送信回数@@@' . ($customer->customer_metric->out_contact_count ?? '') ?>"
+                                data-total-order-amount="<?= '受注金額合計@@@' . ($this->Number->format($customer->customer_metric->all_order_amount) ?? '') . '円' ?>"
+                                data-option-included-order-count="<?= 'オプションを含め製品数@@@' . ($customer->customer_metric->option_included_order_count ?? '') ?>"
+                                data-option-weekly-login-count="<?= '週間ログイン回数@@@' . ($customer->customer_metric->week_login_count ?? '0') ?>"
+                                data-option-weekly-edit-count="<?= '週間編集回数@@@' . ($customer->customer_metric->week_edit_count ?? '0') ?>"
+                                data-option-relationship-strength="<?= '顧客関係力@@@' . ($relationshipStatuses[$customer->customer_metric->relationship_strength] ?? '') ?>"
                     
                                 onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
@@ -413,7 +413,7 @@ $this->Form->setTemplates([
                                 <?php foreach($customer->customer_scores as $customer_score): 
                                     if (in_array($customer_score->indicator_id, $activeIndicatorIds)): 
                                 ?>
-                                    data-indicator-<?= $customer_score->indicator_id ?>="<?= $indicators[$customer_score->indicator_id] . '@' . ($customer_score->indicator_score ?? '') ?>"
+                                    data-indicator-<?= $customer_score->indicator_id ?>="<?= $indicators[$customer_score->indicator_id] . '@@@' . ($customer_score->indicator_score ?? '') ?>"
                                         <?php endif; ?>
                                 <?php endforeach; ?>
                                 onclick="openModal(this, displayData)"
@@ -437,19 +437,18 @@ $this->Form->setTemplates([
 </section>
 
 <div id="modalContainer" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-8 max-w-lg max-h-96 w-full mx-4 overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-xl font-bold">Details</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="modalContent" class="mt-4">
-            </div>
+    <div class="bg-white rounded-lg p-8 max-w-lg max-h-96 w-full mx-4 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 id="modalTitle" class="text-xl font-bold">Details</h3>
+            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
-    
+        <div id="modalContent" class="mt-4">
+        </div>
+    </div>
 </div>
 
 <script>
@@ -492,9 +491,9 @@ function displayData(button) {
             continue
         }
         
-        const [label, content] = value.split("@");
+        const [label, content] = value.split("@@@");
         
-        modalContent.innerHTML += `<p><span class="font-bold">${label}：</span><span>${content}</span></p>`;
+        modalContent.innerHTML += `<p><span class="font-bold">${label}：</span><span class="whitespace-pre-wrap">${content}</span></p>`;
     }
 }
 
@@ -582,15 +581,3 @@ async function checkHellowork(button) {
     }
 }
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
