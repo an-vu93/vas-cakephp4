@@ -1,7 +1,7 @@
 <?php 
 $this->extend('/element/container');
 
-$this->assign('title', 'ツール一覧');
+$this->assign('title', 'ユーザー管理');
 $this->assign('buttonLink', $this->Url->build([
     'controller' => 'UserRoles',
     'action' => 'add',
@@ -43,12 +43,12 @@ $this->assign('buttonLink', $this->Url->build([
                 <td class="flex justify-evenly px-4 py-2 text-center border border-white">
                     <?= $this->Html->link(__('編集'), 
                             ['action' => 'edit', $userRole->id],
-                            ['class' => 'add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
+                            ['class' => 'w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
                     ) ?>
                     <?= $this->Form->postLink(__('削除'), 
                         ['action' => 'delete', $userRole->id], 
                         [   
-                            'class' => 'add-row w-2/5 px-2 py-2 bg-red-500 text-white border border-red-700 text-red-500 rounded hover:bg-red-700 hover:text-white',
+                            'class' => 'w-2/5 px-2 py-2 bg-red-500 text-white border border-red-700 text-red-500 rounded hover:bg-red-700 hover:text-white',
                             'confirm' => __('「 {0} 」の指標を削除しますか?', $userRole->name)
                         ]
                     )?>

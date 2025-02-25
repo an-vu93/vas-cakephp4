@@ -38,7 +38,7 @@ $this->assign('title', '顧客プロファイル');
                 <td class="w-20 px-4 py-2 text-center border border-white">
                     <?= $this->Html->link(__('編集'), 
                         ['action' => 'edit', $customerProfile->id],
-                        ['class' => 'add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
+                        ['class' => 'block w-10 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
                     ) ?>
                 </td>
             </tr>

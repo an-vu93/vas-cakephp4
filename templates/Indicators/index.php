@@ -1,7 +1,7 @@
 <?php 
 $this->extend('/element/container');
 
-$this->assign('title', 'ツール一覧');
+$this->assign('title', '指標一覧');
 $this->assign('buttonLink', $this->Url->build([
     'controller' => 'Indicators',
     'action' => 'add',

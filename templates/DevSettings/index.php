@@ -1,7 +1,7 @@
 <?php 
 $this->extend('/element/container');
 $this->assign('isVisible', false);
-$this->assign('title', '開発者メニュー');
+$this->assign('title', '他の設定');
 ?>
 
 <div class="p-8 h-full bg-white border border-gray-200 rounded-lg shadow flex justify-center">
