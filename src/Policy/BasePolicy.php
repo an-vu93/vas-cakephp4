@@ -11,7 +11,9 @@ class BasePolicy
 
     public function canIndex(IdentityInterface $user)
     {
-        return $this->isAllowed($user, ['owner']);
+        $additonalAllowedRoles = ['owner'];
+
+        return $this->isAllowed($user, $additonalAllowedRoles);
     }
 
     public function canAdd(IdentityInterface $user)

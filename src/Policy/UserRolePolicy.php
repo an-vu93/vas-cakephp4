@@ -46,16 +46,4 @@ class UserRolePolicy extends BasePolicy
     {
         return $this->isAllowed($user, ['owner']);
     }
-
-    /**
-     * Check if $user can view UserRole
-     *
-     * @param \Authorization\IdentityInterface $user The user.
-     * @param \App\Model\Entity\UserRole $userRole
-     * @return bool
-     */
-    public function canView(IdentityInterface $user, UserRole $userRole)
-    {
-        return $this->isAllowed($user, ['root', 'owner']);
-    }
 }

@@ -21,7 +21,8 @@ class IndicatorPolicy extends BasePolicy
     public function canEdit(IdentityInterface $user, Indicator $indicator)
     {
         $additonalAllowedRoles = ['owner'];
-        return $this->isAllowed($user, ['owner']);
+
+        return $this->isAllowed($user, $additonalAllowedRoles);
     }
 
     /**
@@ -33,18 +34,8 @@ class IndicatorPolicy extends BasePolicy
      */
     public function canDelete(IdentityInterface $user, Indicator $indicator)
     {
-        return $this->isAllowed($user, ['owner']);
-    }
+        $additonalAllowedRoles = ['owner'];
 
-    /**
-     * Check if $user can view Indicator
-     *
-     * @param \Authorization\IdentityInterface $user The user.
-     * @param \App\Model\Entity\Indicator $indicator
-     * @return bool
-     */
-    public function canView(IdentityInterface $user, Indicator $indicator)
-    {
-        return $this->isAllowed($user, ['owner']);
+        return $this->isAllowed($user, $additonalAllowedRoles);
     }
 }

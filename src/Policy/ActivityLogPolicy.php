@@ -11,14 +11,10 @@ use Authorization\IdentityInterface;
  */
 class ActivityLogPolicy extends BasePolicy
 {
-    /**
-     * Check if $user can view ActivityLog
-     *
-     * @param \Authorization\IdentityInterface $user The user.
-     * @param \App\Model\Entity\ActivityLog $activityLog
-     * @return bool
-     */
-    public function canView(IdentityInterface $user, ActivityLog $activityLog)
+    public function canIndex(IdentityInterface $user)
     {
+        $additonalAllowedRoles = ['owner', 'analyst'];
+
+        return $this->isAllowed($user, $additonalAllowedRoles);
     }
 }
