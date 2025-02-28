@@ -1,7 +1,7 @@
 <?php 
 $this->extend('/element/container');
 $this->assign('isVisible', false);
-$this->assign('title', '操作歴史の一覧');
+$this->assign('title', '操作ログの一覧');
 ?>
 
 <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">

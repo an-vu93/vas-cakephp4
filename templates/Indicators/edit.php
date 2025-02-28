@@ -23,6 +23,16 @@ $this->assign('buttonLink', $this->Url->build([
             'class' => 'shadow bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-1/2 p-2.5 ml-12',
         ]) ?>
 
+        <?= $this->Form->control('short_name', [
+            'label' => [
+                'text' => '短名　',
+                'class' => 'mb-2 text-lg font-medium text-gray-900'
+            ],
+            'type' => 'text',
+            'required' => true,
+            'class' => 'shadow bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-1/2 p-2.5 ml-12',
+        ]) ?>
+
         <?= $this->Form->control('query', [
             'label' => [
                 'text' => '定義句',
@@ -30,15 +40,16 @@ $this->assign('buttonLink', $this->Url->build([
             ],
             'type' => 'textarea',
             'required' => true,
-            'class' => 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-10/12 p-2.5 ml-12',
+            'disabled' => ($authUser['user_role'] !== 'root') ?? 'true',
+            'class' => 'shadow-sm border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-10/12 p-2.5 ml-12 ' . (($authUser['user_role'] !== 'root') ? 'bg-gray-500' : 'bg-gray-50'),
         ]) ?>
 
         <div class="flex mb-5 items-center">
-            <div class="mr-4 text-lg font-medium text-gray-900">有効設定</div>
+            <div class="mr-4 text-lg font-medium text-gray-900">公開設定</div>
             <div class="flex items-center space-x-4">
                 <?= $this->Form->radio('active', [
-                    ['value' => 1, 'text' => '有効', 'label' => ['class' => 'border border-gray-200 w-32 py-4 text-sm font-medium text-gray-900'], 'class' => 'w-10 h-4 text-blue-600 bg-gray-100 border-gray-300'],
-                    ['value' => 0, 'text' => '無効', 'label' => ['class' => 'border border-gray-200 w-32 py-4 text-sm font-medium text-gray-900'], 'class' => 'w-10 h-4 text-blue-600 bg-gray-100 border-gray-300'],
+                    ['value' => 1, 'text' => '公開', 'label' => ['class' => 'border border-gray-200 w-32 py-4 text-sm font-medium text-gray-900'], 'class' => 'w-10 h-4 text-blue-600 bg-gray-100 border-gray-300'],
+                    ['value' => 0, 'text' => '下書き', 'label' => ['class' => 'border border-gray-200 w-32 py-4 text-sm font-medium text-gray-900'], 'class' => 'w-10 h-4 text-blue-600 bg-gray-100 border-gray-300'],
                 ], [
                     'class' => 'flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700',
                     'default' => '1',           

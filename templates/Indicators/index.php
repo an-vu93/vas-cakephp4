@@ -20,7 +20,7 @@ $this->assign('buttonLink', $this->Url->build([
                     指標名
                 </th>
                 <th scope="col" class="px-4 py-2 border border-white">
-                    有効
+                    公開設定
                 </th>
                 <th scope="col" class="px-4 py-2 border border-white">
                     境界１
@@ -50,7 +50,7 @@ $this->assign('buttonLink', $this->Url->build([
             <tr>
                 <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->id) ?></td>
                 <td scope="row" class="px-4 py-2 border border-white"><?= h($indicator->name) ?></td>
-                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->active) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= ($indicator->active === 1) ? '公開' : '下書き' ?></td>
                 <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_20) ?></td>
                 <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_40) ?></td>
                 <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($indicator->percentile_60) ?></td>
