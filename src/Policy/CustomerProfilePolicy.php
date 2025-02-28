@@ -13,7 +13,7 @@ class CustomerProfilePolicy extends BasePolicy
 {
     public function canEdit(IdentityInterface $user, CustomerProfile $customerProfile)
     {
-        $additonalAllowedRoles = ['owner'];
+        $additonalAllowedRoles = ['owner', 'analyst'];
 
         return $this->isAllowed($user, $additonalAllowedRoles);
     }
