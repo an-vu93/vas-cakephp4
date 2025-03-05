@@ -33,12 +33,12 @@ $this->assign('buttonLink', $this->Url->build([
             <tr>
                 <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($oricohSeries->id) ?></td>
                 <td scope="row" class="px-4 py-2 border border-white"><?= $oricohSeries->has('product_type') ? $this->Html->link($oricohSeries->product_type->name, ['controller' => 'ProductTypes', 'action' => 'view', $oricohSeries->product_type->id]) : '' ?></td>
-                <td scope="row" class="px-4 py-2 border border-white"><?= $this->Number->format($oricohSeries->cms_flg) ?></td>
+                <td scope="row" class="px-4 py-2 border border-white"><?= ($oricohSeries->cms_flg === 1) ? 'はい' : 'いいえ' ?></td>
                 <td class="flex justify-evenly px-4 py-2 text-center border border-white">
-                    <?= $this->Html->link(__('編集'), 
+                    <!-- <?= $this->Html->link(__('編集'), 
                         ['action' => 'edit', $oricohSeries->id],
                         ['class' => 'add-row w-2/5 px-2 py-2 bg-white border border-primary-700 text-primary-500 rounded hover:bg-primary-500 hover:text-white']
-                    ) ?>
+                    ) ?> -->
                     <?= $this->Form->postLink(__('削除'), 
                         ['action' => 'delete', $oricohSeries->id], 
                         [   
