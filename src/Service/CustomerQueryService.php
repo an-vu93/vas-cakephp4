@@ -46,7 +46,7 @@ class CustomerQueryService
         
         // Set lower boundary if exist
         if (!empty($requestParams['min_score'])) {
-            $query->having(['weighted_avg_score >' => $requestParams['min_score']]);
+            $query->having(['weighted_avg_score >=' => $requestParams['min_score']]);
         }
 
         return $query;
