@@ -153,6 +153,9 @@ $this->Form->setTemplates([
             <td class="flex w-1/3 border-none p-0">
                 <?= $this->Form->control('min_score', [
                     'type' => 'number',
+                    'step' => 0.01,
+                    'min' => 1,
+                    'max' => 5,
                     'label' => [
                         'text' => '最低点数',
                         'class' => 'font-medium bg-primary-500 text-white w-1/4',
