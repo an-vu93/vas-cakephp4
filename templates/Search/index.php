@@ -170,7 +170,7 @@ $this->Form->setTemplates([
                 <?= $this->Form->control('year_since_last_order', [
                     'type' => 'number',
                     'label' => [
-                        'text' => '最金注文からの年数',
+                        'text' => '最近受注からの年数',
                         'class' => 'font-medium bg-primary-500 text-white w-1/4',
                         'escape' => false, 
                     ],
