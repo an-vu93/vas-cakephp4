@@ -165,6 +165,19 @@ $this->Form->setTemplates([
                     'value' => $requestParams['min_score'] ?? '',
                 ]) ?>
             </td>
+
+            <td class="flex w-1/3 border-none p-0">
+                <?= $this->Form->control('year_since_last_order', [
+                    'type' => 'number',
+                    'label' => [
+                        'text' => '最金注文からの年数',
+                        'class' => 'font-medium bg-primary-500 text-white w-1/4',
+                        'escape' => false, 
+                    ],
+                    'class' => 'shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5',
+                    'value' => $requestParams['year_since_last_order'] ?? '',
+                ]) ?>
+            </td>
         </tr>
         </table>
     </div>

@@ -129,6 +129,18 @@ class CustomerQueryService
             });
         }
 
+        // Year since last order filter
+        if (!empty($requestParams['year_since_last_order'])) {
+            // Calculate the target date in PHP
+            $targetDate = (new \DateTime())->modify('-' . $requestParams['year_since_last_order'] . ' years')->format('Y-m-d');
+
+            $query->matching('CustomerMetrics', function ($q) use ($targetDate) {
+                return $q->where([
+                    'CustomerMetrics.last_order_date <=' => $targetDate
+                ]);
+            });
+        }
+
         return $query;
     }
 }
