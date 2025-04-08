@@ -182,6 +182,7 @@ class SearchController extends AppController
             '子業種',
             '最初受注日',
             '最近受注日',
+            '最近受注日から経過年数',
             'OBシリーズの受注回数',
             'OBライセンス数',
             'OB以外ライセンス数',
@@ -219,6 +220,8 @@ class SearchController extends AppController
             ->order(['weighted_avg_score' => 'DESC'])
             ->find('all');
 
+        $now = new \DateTime();
+
         foreach ($customers as $customer) {  
                 
             $row = [
@@ -232,6 +235,7 @@ class SearchController extends AppController
                 $customer->customer_profile->sub_industry->name ?? '',
                 $customer->customer_metric->first_order_date ?? '',
                 $customer->customer_metric->last_order_date ?? '',
+                $customer->customer_metric->last_order_date  ? $customer->customer_metric->last_order_date->diffInYears(\Cake\I18n\FrozenTime::now()) : '',
                 $customer->customer_metric->order_count ?? '',
                 $customer->customer_metric->oricoh_license_count ?? '',
                 $customer->customer_metric->other_license_count ?? '',
