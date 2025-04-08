@@ -48,6 +48,8 @@ class CustomerQueryService
         if (!empty($requestParams['min_score'])) {
             $query->having(['weighted_avg_score >=' => $requestParams['min_score']]);
         }
+        
+        $query->distinct(['Customers.id']);
 
         return $query;
     }
@@ -72,74 +74,76 @@ class CustomerQueryService
             }
         }
 
-        // Prefecture filter
-        if (!empty($requestParams['prefecture_id'])) {
-            $query->matching('CustomerProfiles', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProfiles.prefecture_id' => $requestParams['prefecture_id']]);
-            });
-        }
+        $query->innerJoinWith('CustomerProfiles', function ($q) use ($requestParams) {
+            $conditions = [];
 
-        // Salesperson filter
-        if (!empty($requestParams['salesperson_id'])) {
-            $query->matching('CustomerProducts', function ($q) use ($requestParams) {
-                    return $q->where(['CustomerProducts.salesperson_id' => $requestParams['salesperson_id']]);
-                })
-                ->distinct();
-        }
+            // Prefecture filter
+            if (!empty($requestParams['prefecture_id'])) {
+                $conditions['CustomerProfiles.prefecture_id'] = $requestParams['prefecture_id'];
+            }
 
-        // Industry filter
-        if (!empty($requestParams['industry_id'])) {
-            $query->matching('CustomerProfiles', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProfiles.industry_id' => $requestParams['industry_id']]);
-            });
-        }
+            // Industry filter
+            if (!empty($requestParams['industry_id'])) {
+                $conditions['CustomerProfiles.industry_id'] = $requestParams['industry_id'];
+            }
 
-        // Sub-industry filter
-        if (!empty($requestParams['sub_industry_id'])) {
-            $query->matching('CustomerProfiles', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProfiles.sub_industry_id' => $requestParams['sub_industry_id']]);
-            });
-        }
+            // Sub-industry filter
+            if (!empty($requestParams['sub_industry_id'])) {
+                $conditions['CustomerProfiles.sub_industry_id'] = $requestParams['sub_industry_id'];
+            }
 
-        // OB version filter
-        if (!empty($requestParams['product_type_id'])) {
-            $query->matching('CustomerProducts', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProducts.product_type_id' => $requestParams['product_type_id']]);
-            });
-        }
+            // Employee number filter
+            if (!empty($requestParams['employee_number'])) {
+                $conditions['CustomerProfiles.employee_number >='] = $requestParams['employee_number'];
+            }
 
-        // Employee number filter
-        if (!empty($requestParams['employee_number'])) {
-            $query->matching('CustomerProfiles', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProfiles.employee_number >=' => $requestParams['employee_number']]);
-            });
-        }
+             // Capital filter
+            if (!empty($requestParams['capital'])) {
+                $conditions['CustomerProfiles.capital >='] = $requestParams['capital'];
+            }
 
-        // Capital filter
-        if (!empty($requestParams['capital'])) {
-            $query->matching('CustomerProfiles', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProfiles.capital >=' => $requestParams['capital']]);
-            });
-        }
+            // Revenue filter
+            if (!empty($requestParams['revenue'])) {
+                $conditions['CustomerProfiles.revenue >='] = $requestParams['revenue'];
+            }
+        
+            return $q->where($conditions);
+        });
 
-        // Revenue filter
-        if (!empty($requestParams['revenue'])) {
-            $query->matching('CustomerProfiles', function ($q) use ($requestParams) {
-                return $q->where(['CustomerProfiles.revenue >=' => $requestParams['revenue']]);
-            });
-        }
+        $query->innerJoinWith('CustomerProducts', function ($q) use ($requestParams) {
+            $conditions = [];
 
-        // Year since last order filter
-        if (!empty($requestParams['year_since_last_order'])) {
-            // Calculate the target date in PHP
-            $targetDate = (new \DateTime())->modify('-' . $requestParams['year_since_last_order'] . ' years')->format('Y-m-d');
+            // Salesperson filter
+            if (!empty($requestParams['salesperson_id'])) {
+                $conditions['CustomerProducts.salesperson_id'] = $requestParams['salesperson_id'];
+            }
 
-            $query->matching('CustomerMetrics', function ($q) use ($targetDate) {
-                return $q->where([
-                    'CustomerMetrics.last_order_date <=' => $targetDate
-                ]);
-            });
-        }
+            // OB version filter
+            if (!empty($requestParams['product_type_id'])) {
+                $conditions['CustomerProducts.product_type_id'] = $requestParams['product_type_id'];
+            }
+
+            // Contract status filter
+            if (!empty($requestParams['contract_status'])) {
+                $conditions['CustomerProducts.cancel_flg IN'] = $requestParams['contract_status'];
+            }
+
+            return $q->where($conditions);
+        });
+
+        $query->innerJoinWith('CustomerMetrics', function ($q) use ($requestParams) {
+            $conditions = [];
+
+            // Year since last order filter
+            if (!empty($requestParams['year_since_last_order'])) {
+                // Calculate the target date in PHP
+                $targetDate = (new \DateTime())->modify('-' . $requestParams['year_since_last_order'] . ' years')->format('Y-m-d');
+                // Contract status filter
+                $conditions['CustomerMetrics.last_order_date <= IN'] = $targetDate;
+            }
+
+            return $q->where($conditions);
+        });
 
         return $query;
     }

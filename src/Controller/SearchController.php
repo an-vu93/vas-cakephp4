@@ -220,8 +220,6 @@ class SearchController extends AppController
             ->order(['weighted_avg_score' => 'DESC'])
             ->find('all');
 
-        $now = new \DateTime();
-
         foreach ($customers as $customer) {  
                 
             $row = [

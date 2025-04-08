@@ -179,6 +179,26 @@ $this->Form->setTemplates([
                 ]) ?>
             </td>
         </tr>
+        
+        <tr class="flex mt-4">
+            <td class="flex w-1/3 border-none p-0">
+                <label class="font-medium bg-primary-500 text-white w-1/4">契約状態</label>
+                <div class="shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5 flex items-center">
+        <?= $this->Form->control('contract_status', [
+            'type' => 'select',
+            'multiple' => 'checkbox',
+            'options' => [
+                '0' => '契約中',
+                '1' => 'キャンセル',
+                '2' => '解約',
+            ],
+            'value' => $requestParams['contract_status'] ?? '',
+            'label' => false,
+            'class' => 'ml-4',
+        ]) ?>
+    </div>
+            </td>
+        </tr>
         </table>
     </div>
 
@@ -252,35 +272,39 @@ $this->Form->setTemplates([
                     </th>
                  
                     <th scope="col" class="company-info hidden px-4 py-2 border border-white">
-                        <?= $this->element('sort_field', [
+                        <!-- <?= $this->element('sort_field', [
                             'sortField' => 'Prefectures.id',
                             'sortText' => '都道府県',
-                        ]); ?>
+                        ]); ?> -->
+                        都道府県
                     </th>
                     <th scope="col" class="company-info hidden px-4 py-2 border border-white">
-                        <?= $this->element('sort_field', [
+                        <!-- <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.employee_number',
                             'sortText' => '従業員数',
-                        ]); ?>
+                        ]); ?> -->
+                        従業員数
                     </th>
                     <th scope="col" class="company-info hidden px-4 py-2 border border-white">
-                        <?= $this->element('sort_field', [
+                        <!-- <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.capital',
                             'sortText' => '資本金',
-                        ]); ?>
+                        ]); ?> -->
+                        資本金
                     </th>
                     <th scope="col" class="company-info hidden px-4 py-2 border border-white">
-                        <?= $this->element('sort_field', [
+                        <!-- <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.revenue',
                             'sortText' => '年商',
-                        ]); ?>
-                        
+                        ]); ?> -->
+                        年商
                     </th>
                     <th scope="col" class="company-info hidden px-4 py-2 border border-white">
-                        <?= $this->element('sort_field', [
+                        <!-- <?= $this->element('sort_field', [
                             'sortField' => 'CustomerProfiles.industry_id',
                             'sortText' => '親業種',
-                        ]); ?>
+                        ]); ?> -->
+                        親業種
                     </th>    
                        
                     <th scope="col" class="px-4 py-2 border border-white">
