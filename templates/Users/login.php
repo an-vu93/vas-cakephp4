@@ -2,6 +2,7 @@
     <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
         <?= $this->Flash->render() ?>
         <h3 class="text-lg font-semibold text-center text-gray-700">ログイン</h3>
+        <h4 class="text-center">（会社の個人メールとパスワード）</h4>
         <?= $this->Form->create(null, ['class' => 'mt-4']) ?>
         <div class="mb-4">
             <?= $this->Form->control('username', [
