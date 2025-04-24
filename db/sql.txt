@@ -1,0 +1,22 @@
+UPDATE customer_metrics cm
+JOIN (
+    SELECT dc.c_id AS customer_id, SUM(dmd.page_view) AS page_view
+    FROM dev_clients dc
+    INNER JOIN dev_monthly_datas dmd ON dc.id = dmd.client_id
+    WHERE dc.own_flg = 0
+    GROUP BY dc.c_id
+) tmp ON cm.customer_id = tmp.customer_id
+SET cm.page_view_count = tmp.page_view;
+
+
+UPDATE customer_metrics cm
+JOIN (
+    SELECT dc.c_id AS customer_id, SUM(ddd.week_login_cnt) AS week_login_count, SUM(ddd.week_edit_cnt) AS week_edit_count
+    FROM dev_clients dc
+    INNER JOIN dev_dashboard_datas ddd ON dc.id = ddd.client_id
+    WHERE dc.own_flg = 0
+    GROUP BY dc.c_id
+) tmp ON cm.customer_id = tmp.customer_id
+SET cm.week_login_count = tmp.week_login_count,
+    cm.week_edit_count = tmp.week_edit_count;
+
