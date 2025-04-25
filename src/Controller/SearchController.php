@@ -181,13 +181,16 @@ class SearchController extends AppController
             '親業種',
             '子業種',
             '最初受注日',
-            '最近受注日',
-            '最近受注日から経過年数',
+            '最終受注日',
+            // '最近受注日から経過年数',
             'OBシリーズの受注回数',
             'OBライセンス数',
             'OB以外ライセンス数',
             'お問い合わせの着信回数',
             'お問い合わせの送信回数',
+            '週ログイン回数',
+            '週編集回数',
+            'PV回数',
         ];
 
         $indicatorTable = $this->fetchTable('Indicators');
@@ -231,14 +234,16 @@ class SearchController extends AppController
                 $customer->customer_profile->revene ?? '',
                 $customer->customer_profile->industry->name ?? '',
                 $customer->customer_profile->sub_industry->name ?? '',
-                $customer->customer_metric->first_order_date ?? '',
-                $customer->customer_metric->last_order_date ?? '',
-                $customer->customer_metric->last_order_date  ? $customer->customer_metric->last_order_date->diffInYears(\Cake\I18n\FrozenTime::now()) : '',
+                $customer->customer_metric->first_order_date ? $customer->customer_metric->first_order_date->format('Y年m月d日') : '',
+                $customer->customer_metric->last_order_date ? $customer->customer_metric->first_order_date->format('Y年m月d日') : '',
                 $customer->customer_metric->order_count ?? '',
                 $customer->customer_metric->oricoh_license_count ?? '',
                 $customer->customer_metric->other_license_count ?? '',
                 $customer->customer_metric->in_contact_count ?? '',
                 $customer->customer_metric->out_contact_count ?? '',
+                $customer->customer_metric->week_login_count ?? '',
+                $customer->customer_metric->week_edit_count ?? '',
+                $customer->customer_metric->page_view_count ?? '',
             ];
             
             // Add scores if analysis is selected

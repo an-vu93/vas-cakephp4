@@ -48,7 +48,7 @@ class CustomerQueryService
         if (!empty($requestParams['min_score'])) {
             $query->having(['weighted_avg_score >=' => $requestParams['min_score']]);
         }
-        
+
         $query->distinct(['Customers.id']);
 
         return $query;
@@ -134,14 +134,30 @@ class CustomerQueryService
         $query->innerJoinWith('CustomerMetrics', function ($q) use ($requestParams) {
             $conditions = [];
 
-            // Year since last order filter
-            if (!empty($requestParams['year_since_last_order'])) {
+            // Year month since last order filter
+            if (!empty($requestParams['years_since_last_order']) || !empty($requestParams['months_since_last_order'])) {
                 // Calculate the target date in PHP
-                $targetDate = (new \DateTime())->modify('-' . $requestParams['year_since_last_order'] . ' years')->format('Y-m-d');
+                $duration = '';
+                $duration .= $requestParams['years_since_last_order'] ? ($requestParams['years_since_last_order'] . ' years') : '';
+                $duration .= $requestParams['months_since_last_order'] ? (' ' . $requestParams['months_since_last_order'] . ' months') : 'n';
+                $targetDate = (new \DateTime())->modify('-' . trim($duration))->format('Y-m-d');
                 // Contract status filter
-                $conditions['CustomerMetrics.last_order_date <= IN'] = $targetDate;
+                $conditions['CustomerMetrics.last_order_date <='] = $targetDate;
             }
-
+            
+            // PV filter
+            if (!empty($requestParams['page_view_count'])) {
+                $conditions['CustomerMetrics.page_view_count >='] = $requestParams['page_view_count'];
+            }
+            
+            // Last order date filter
+            if (!empty($requestParams['lastest_order_start_date'])) {
+                $conditions['CustomerMetrics.last_order_date >='] = $requestParams['lastest_order_start_date'];
+            }
+            if (!empty($requestParams['lastest_order_end_date'])) {
+                $conditions['CustomerMetrics.last_order_date <='] = $requestParams['lastest_order_end_date'];
+            }
+           
             return $q->where($conditions);
         });
 

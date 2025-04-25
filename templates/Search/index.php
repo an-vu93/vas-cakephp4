@@ -167,16 +167,30 @@ $this->Form->setTemplates([
             </td>
 
             <td class="flex w-1/3 border-none p-0">
-                <?= $this->Form->control('year_since_last_order', [
-                    'type' => 'number',
-                    'label' => [
-                        'text' => '最近受注からの年数',
-                        'class' => 'font-medium bg-primary-500 text-white w-1/4',
-                        'escape' => false, 
-                    ],
-                    'class' => 'shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5',
-                    'value' => $requestParams['year_since_last_order'] ?? '',
-                ]) ?>
+                <label class="font-medium bg-primary-500 text-white w-1/4">
+                    最終受注日
+                    <?= $this->element('tooltip', [
+                        'tooltipText' => '似ている作用の最終受注からの経過年月のフィルタと同時に利用しないでください。',
+                         'tooltipIcon' => '⚠'
+                    ]) ?>
+                </label>
+                <div class="shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5 flex items-center">
+                    <?= $this->Form->control(' lastest_order_start_date', [
+                        'type' => 'date',
+                        'label' => false,
+                        'class' => 'ml-4 w-30 text-center bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500',
+                        'value' => $requestParams['lastest_order_start_date'] ?? '',
+                        'min' => '2005-11-01',
+                    ]) ?>
+                    <span class="mx-2">～</span>
+                    <?= $this->Form->control('lastest_order_end_date', [
+                        'type' => 'date',
+                        'label' => false,
+                        'class' => 'w-30 text-center bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500',
+                        'value' => $requestParams['lastest_order_end_date'] ?? '',
+                        'min' => '2005-11-01',
+                    ]) ?>   
+                </div>
             </td>
         </tr>
         
@@ -184,20 +198,71 @@ $this->Form->setTemplates([
             <td class="flex w-1/3 border-none p-0">
                 <label class="font-medium bg-primary-500 text-white w-1/4">契約状態</label>
                 <div class="shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5 flex items-center">
-        <?= $this->Form->control('contract_status', [
-            'type' => 'select',
-            'multiple' => 'checkbox',
-            'options' => [
-                '0' => '契約中',
-                '1' => 'キャンセル',
-                '2' => '解約',
-            ],
-            'value' => $requestParams['contract_status'] ?? '',
-            'label' => false,
-            'class' => 'ml-4',
-        ]) ?>
-    </div>
+                    <?= $this->Form->control('contract_status', [
+                        'type' => 'select',
+                        'multiple' => 'checkbox',
+                        'options' => [
+                            '0' => '契約中',
+                            '1' => 'キャンセル',
+                            '2' => '解約',
+                        ],
+                        'value' => $requestParams['contract_status'] ?? '',
+                        'label' => false,
+                        'class' => 'ml-4',
+                    ]) ?>
+                </div>
             </td>
+
+            <td class="flex w-1/3 border-none p-0">
+                <?= $this->Form->control('page_view_count', [
+                    'type' => 'number',
+                    'label' => [
+                        'text' => '最低PV回数',
+                        'class' => 'font-medium bg-primary-500 text-white w-1/4',
+                        'escape' => false, 
+                    ],
+                    'class' => 'shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5',
+                    'value' => $requestParams['page_view_count'] ?? '',
+                ]) ?>
+            </td>
+
+            <td class="flex w-1/3 border-none p-0">
+                <div class="flex w-full">
+                    <label class="font-medium bg-primary-500 text-white w-1/4">
+                        最終受注からの経過年月 
+                        <?= $this->element('tooltip', [
+                            'tooltipText' => '似ている作用の最終チェック受注日のフィルタと同時に利用しないでください。',
+                            'tooltipIcon' => '⚠'
+                        ]) ?>
+                    </label>
+                    <div class="shadow w-3/4 bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500 p-2.5 flex items-center">
+                        <div class="flex items-center ml-4">
+                            <?= $this->Form->control('years_since_last_order', [
+                                'type' => 'number',
+                                'label' => false,
+                                'class' => 'w-16 text-center bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500',
+                                'value' => $requestParams['years_since_last_order'] ?? '',
+                                'max' => '15',
+                                'min' => '0'
+                            ]) ?>   
+                            <span class="mx-1">年</span>
+                        </div>
+                        <div class="flex items-center">
+                        <?= $this->Form->control('months_since_last_order', [
+                                'type' => 'number',
+                                'label' => false,
+                                'class' => 'w-16 text-center bg-gray-50 text-gray-900 border border-gray-300 focus:ring-primary-500 focus:border-primary-500',
+                                'value' => $requestParams['months_since_last_order'] ?? '',
+                                'max' => '11',
+                                'min' => '0'
+                            ]) ?>   
+                            <span class="mx-1">ヶ月</span>
+                        </div>
+                       
+                    </div>
+                </div>
+            </td>
+
         </tr>
         </table>
     </div>
@@ -440,6 +505,7 @@ $this->Form->setTemplates([
                                 data-option-weekly-login-count="<?= '週間ログイン回数@@@' . ($customer->customer_metric->week_login_count ?? '0') ?>"
                                 data-option-weekly-edit-count="<?= '週間編集回数@@@' . ($customer->customer_metric->week_edit_count ?? '0') ?>"
                                 data-option-relationship-strength="<?= '顧客関係力@@@' . ($relationshipStatuses[$customer->customer_metric->relationship_strength] ?? '') ?>"
+                                data-option-page-view-count="<?= 'PV回数@@@' .  ($customer->customer_metric->page_view_count ?? '0') ?>"
                     
                                 onclick="openModal(this, displayData)"
                                 class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
