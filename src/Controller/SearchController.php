@@ -166,9 +166,27 @@ class SearchController extends AppController
         $requestParams = $this->request->getQuery();
         
         $this->ActivityLog->logActivity('ファイル出力', '以下の条件で情報抽出が行われた: ' . json_encode($requestParams));
-        
-        // Build the query similar to index()
-        $customerQuery = $this->customerQueryService->buildCustomerQuery($requestParams);      
+
+        // Set execution time limit
+        set_time_limit(300);
+
+        // Disable output buffering
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        // Set headers for streamed download
+        $filename = 'customer_export_' . date('Y-m-d_His') . '.csv';
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Pragma: public');
+
+        // Open output stream directly to the browser
+        $output = fopen('php://output', 'w');
+
+        // Write UTF-8 BOM for Excel compatibility
+        fwrite($output, "\xEF\xBB\xBF");
     
         // Prepare CSV headers
         $headers = [
@@ -182,7 +200,7 @@ class SearchController extends AppController
             '子業種',
             '最初受注日',
             '最終受注日',
-            // '最近受注日から経過年数',
+            '過去のハローワーク求人',
             'OBシリーズの受注回数',
             'OBライセンス数',
             'OB以外ライセンス数',
@@ -208,78 +226,91 @@ class SearchController extends AppController
             }
             $headers[] = '総合評価';
         }
-        
-        // Create a temporary file handle
-        $filename = 'customer_export_' . date('Y-m-d_His') . '.csv';
-        $fp = fopen('php://temp', 'w+');
-        
-        // Write UTF-8 BOM for Excel compatibility
-        fwrite($fp, "\xEF\xBB\xBF");
-        
+
         // Write headers
-        fputcsv($fp, $headers);
+        fputcsv($output, $headers);
+
+        flush();
+
+        $batchSize = 6000;
+        $page = 1;
+        $moreRecords = true;
         
-        $customers = $customerQuery
-            ->order(['weighted_avg_score' => 'DESC'])
-            ->find('all');
-
-        foreach ($customers as $customer) {  
+        while ($moreRecords) {
+            try {
+                // Create a clean query for each page to avoid carrying over states
+                $pageQuery = $this->customerQueryService->buildCustomerQuery($requestParams)
+                ->order(['weighted_avg_score' => 'DESC'])
+                ->limit($batchSize)
+                ->page($page);    
+              
+                $batch = $pageQuery->toArray();
                 
-            $row = [
-                $customer->id,
-                $customer->name,
-                $customer->prefecture->name ?? '',
-                $customer->customer_profile->employee_number ?? '',
-                $customer->customer_profile->capital ?? '',
-                $customer->customer_profile->revene ?? '',
-                $customer->customer_profile->industry->name ?? '',
-                $customer->customer_profile->sub_industry->name ?? '',
-                $customer->customer_metric->first_order_date ? $customer->customer_metric->first_order_date->format('Y年m月d日') : '',
-                $customer->customer_metric->last_order_date ? $customer->customer_metric->first_order_date->format('Y年m月d日') : '',
-                $customer->customer_metric->order_count ?? '',
-                $customer->customer_metric->oricoh_license_count ?? '',
-                $customer->customer_metric->other_license_count ?? '',
-                $customer->customer_metric->in_contact_count ?? '',
-                $customer->customer_metric->out_contact_count ?? '',
-                $customer->customer_metric->week_login_count ?? '',
-                $customer->customer_metric->week_edit_count ?? '',
-                $customer->customer_metric->page_view_count ?? '',
-            ];
-            
-            // Add scores if analysis is selected
-            if (!empty($requestParams['analysis_id'])) {
-                $scores = collection($customer->customer_scores)
-                    ->combine('indicator_id', 'indicator_score')
-                    ->toArray();
-                    
-                foreach ($indicators as $indicator) {
-                    $row[] = $scores[$indicator->id] ?? '';
+                if (empty($batch)) {
+                    $moreRecords = false;
+                    continue;
                 }
-                
-                $row[] = $customer->weighted_avg_score ?? '';
-            }
-            
-            fputcsv($fp, $row);
 
-            // Flush the output buffer periodically
-            if (ob_get_length() > 10000) {
-                ob_flush();
-                flush();
-            }
+                foreach ($batch as $customer) {
+                    $row = [
+                        $customer->id,
+                        $customer->name,
+                        $customer->prefecture->name ?? '',
+                        $customer->customer_profile->employee_number ?? '',
+                        $customer->customer_profile->capital ?? '',
+                        $customer->customer_profile->revene ?? '',
+                        $customer->customer_profile->industry->name ?? '',
+                        $customer->customer_profile->sub_industry->name ?? '',
+                        $customer->customer_metric->first_order_date ? $customer->customer_metric->first_order_date->format('Y年m月d日') : '',
+                        $customer->customer_metric->last_order_date ? $customer->customer_metric->last_order_date->format('Y年m月d日') : '',
+                        $customer->customer_profile->hw_business_number ? '●' : '',
+                        $customer->customer_metric->order_count ?? '',
+                        $customer->customer_metric->oricoh_license_count ?? '',
+                        $customer->customer_metric->other_license_count ?? '',
+                        $customer->customer_metric->in_contact_count ?? '',
+                        $customer->customer_metric->out_contact_count ?? '',
+                        $customer->customer_metric->week_login_count ?? '',
+                        $customer->customer_metric->week_edit_count ?? '',
+                        $customer->customer_metric->page_view_count ?? '',
+                    ];
+                    
+                    // Add scores if analysis is selected
+                    if (!empty($requestParams['analysis_id'])) {
+                        $scores = collection($customer->customer_scores)
+                            ->combine('indicator_id', 'indicator_score')
+                            ->toArray();
+                            
+                        foreach ($indicators as $indicator) {
+                            $row[] = $scores[$indicator->id] ?? '';
+                        }
+                        
+                        $row[] = $customer->weighted_avg_score ?? '';
+                    }
+                    
+                    fputcsv($output, $row);
+
+                    // Flush after each batch
+                    flush();
+
+                    // Free up memory
+                    unset($batch);
+                }
+                    
+                $page++;
+
+            } catch (\Exception $e) {
+                // Log batch-specific error but continue with next batch
+                $this->log("Error processing batch {$page}: " . $e->getMessage(), 'error');
+                $page++;
+                
+                // If we've had 3 consecutive batch errors, abort
+                if ($page > 3 && empty($batch)) {
+                    throw new \Exception('Multiple consecutive batch errors, aborting export');
+                }
+            }            
         }
         
-        // Reset file pointer
-        rewind($fp);
-        
-        // Read file contents
-        $csv = stream_get_contents($fp);
-        fclose($fp);
-        
-        // Set response headers
-        $response = $response->withType('csv');
-        $response = $response->withDownload($filename);
-        
-        return $response->withStringBody($csv);
+        exit;
     }
 
     public function corporate()
