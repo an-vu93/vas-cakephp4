@@ -49,7 +49,7 @@ class CustomersTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->addBehavior('Timestamp');
+        // $this->addBehavior('Timestamp');
 
         $this->belongsTo('Prefectures', [
             'foreignKey' => 'prefecture_id',
