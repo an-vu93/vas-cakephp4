@@ -192,6 +192,7 @@ class SearchController extends AppController
         $headers = [
             '顧客ID',
             '顧客名',
+            'URL',
             '都道府県',
             '従業員数',
             '資本金',
@@ -255,6 +256,7 @@ class SearchController extends AppController
                     $row = [
                         $customer->id,
                         $customer->name,
+                        $customer->customer_profile->homepage,
                         $customer->prefecture->name ?? '',
                         $customer->customer_profile->employee_number ?? '',
                         $customer->customer_profile->capital ?? '',
