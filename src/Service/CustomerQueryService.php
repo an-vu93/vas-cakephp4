@@ -28,6 +28,9 @@ class CustomerQueryService
                 'CustomerProfiles' => [
                     'Industries',
                     'SubIndustries',
+                    'SaleStores',
+                    'Offices',
+                    'OfficePersons',
                 ],
                'CustomerProducts' => function ($q) {
                     return $q->innerJoinWith('ProductTypes.OricohSeries')->order(['CustomerProducts.id' => 'DESC']);

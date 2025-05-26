@@ -210,6 +210,9 @@ class SearchController extends AppController
             '週ログイン回数',
             '週編集回数',
             'PV回数',
+            'RJ様の支社名',
+            'RJ様の営業所',
+            'RJ様の担当営業',
         ];
 
         $indicatorTable = $this->fetchTable('Indicators');
@@ -274,6 +277,9 @@ class SearchController extends AppController
                         $customer->customer_metric->week_login_count ?? '',
                         $customer->customer_metric->week_edit_count ?? '',
                         $customer->customer_metric->page_view_count ?? '',
+                        $customer->customer_profile->sale_store->name ?? '',
+                        $customer->customer_profile->office->name ?? '',
+                        $customer->customer_profile->office_person->name ?? '',
                     ];
                     
                     // Add scores if analysis is selected

@@ -12,6 +12,8 @@ use Cake\Validation\Validator;
  * CustomerProfiles Model
  *
  * @property \App\Model\Table\CustomersTable&\Cake\ORM\Association\BelongsTo $Customers
+ * @property \App\Model\Table\IndustriesTable&\Cake\ORM\Association\BelongsTo $Industries
+ * @property \App\Model\Table\SubIndustriesTable&\Cake\ORM\Association\BelongsTo $SubIndustries
  * @property \App\Model\Table\PrefecturesTable&\Cake\ORM\Association\BelongsTo $Prefectures
  *
  * @method \App\Model\Entity\CustomerProfile newEmptyEntity()
@@ -60,6 +62,18 @@ class CustomerProfilesTable extends Table
         $this->belongsTo('SubIndustries', [
             'foreignKey' => 'sub_industry_id',
         ]);
+        $this->belongsTo('SaleStores', [
+            'className' => 'PartnerInfos',
+            'foreignKey' => 'latest_sale_store_id',
+        ]);
+        $this->belongsTo('Offices', [
+            'className' => 'PartnerInfos',
+            'foreignKey' => 'latest_office_id',
+        ]);
+        $this->belongsTo('OfficePersons', [
+            'className' => 'PartnerPersons',
+            'foreignKey' => 'latest_office_person_id',
+        ]);
     }
 
     /**
@@ -75,11 +89,23 @@ class CustomerProfilesTable extends Table
             ->allowEmptyString('customer_id');
 
         $validator
-            ->integer('corporate_number')
+            ->integer('industry_id')
+            ->allowEmptyString('industry_id');
+
+        $validator
+            ->integer('sub_industry_id')
+            ->allowEmptyString('sub_industry_id');
+
+        $validator
+            ->integer('prefecture_id')
+            ->allowEmptyString('prefecture_id');
+
+        $validator
             ->allowEmptyString('corporate_number');
 
         $validator
-            ->integer('hw_business_number')
+            ->scalar('hw_business_number')
+            ->maxLength('hw_business_number', 20)
             ->allowEmptyString('hw_business_number');
 
         $validator
@@ -87,12 +113,15 @@ class CustomerProfilesTable extends Table
             ->allowEmptyString('employee_number');
 
         $validator
-            ->integer('capital')
             ->allowEmptyString('capital');
 
         $validator
-            ->integer('revenue')
             ->allowEmptyString('revenue');
+
+        $validator
+            ->scalar('revenue_year')
+            ->maxLength('revenue_year', 30)
+            ->allowEmptyString('revenue_year');
 
         $validator
             ->integer('recruiting_flg')
@@ -107,8 +136,34 @@ class CustomerProfilesTable extends Table
             ->allowEmptyString('remark');
 
         $validator
-            ->integer('prefecture_id')
-            ->allowEmptyString('prefecture_id');
+            ->scalar('hw_homepage')
+            ->maxLength('hw_homepage', 255)
+            ->allowEmptyString('hw_homepage');
+
+        $validator
+            ->scalar('homepage')
+            ->requirePresence('homepage', 'create')
+            ->notEmptyString('homepage');
+
+        $validator
+            ->integer('latest_sale_store_id')
+            ->allowEmptyString('latest_sale_store_id');
+
+        $validator
+            ->integer('latest_office_id')
+            ->allowEmptyString('latest_office_id');
+
+        $validator
+            ->integer('latest_office_person_id')
+            ->allowEmptyString('latest_office_person_id');
+
+        $validator
+            ->integer('latest_store_id')
+            ->allowEmptyString('latest_store_id');
+
+        $validator
+            ->integer('latest_store_person_id')
+            ->allowEmptyString('latest_store_person_id');
 
         return $validator;
     }
@@ -123,6 +178,8 @@ class CustomerProfilesTable extends Table
     public function buildRules(RulesChecker $rules): RulesChecker
     {
         $rules->add($rules->existsIn('customer_id', 'Customers'), ['errorField' => 'customer_id']);
+        $rules->add($rules->existsIn('industry_id', 'Industries'), ['errorField' => 'industry_id']);
+        $rules->add($rules->existsIn('sub_industry_id', 'SubIndustries'), ['errorField' => 'sub_industry_id']);
         $rules->add($rules->existsIn('prefecture_id', 'Prefectures'), ['errorField' => 'prefecture_id']);
 
         return $rules;
