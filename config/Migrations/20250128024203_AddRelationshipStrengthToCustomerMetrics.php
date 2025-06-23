@@ -1,0 +1,26 @@
+<?php
+declare(strict_types=1);
+
+use Migrations\AbstractMigration;
+
+class AddRelationshipStrengthToCustomerMetrics extends AbstractMigration
+{
+    /**
+     * Change Method.
+     *
+     * More information on this method is available here:
+     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
+     * @return void
+     */
+    public function change(): void
+    {
+        $table = $this->table('customer_metrics');
+        $table->addColumn('relationship_strength', 'integer', [
+            'default' => 0,
+            'limit' => 11,
+            'null' => false,
+            'after' => 'option_included_order_count'
+        ]);
+        $table->update();
+    }
+}
