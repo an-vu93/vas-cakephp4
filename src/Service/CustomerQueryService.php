@@ -33,7 +33,9 @@ class CustomerQueryService
                     'OfficePersons',
                 ],
                'CustomerProducts' => function ($q) {
-                    return $q->innerJoinWith('ProductTypes.OricohSeries')->order(['CustomerProducts.id' => 'DESC']);
+                return $q->innerJoinWith('ProductTypes.OricohSeries')
+                    ->contain(['ProductTypes' => ['OricohSeries']])
+                    ->order(['CustomerProducts.id' => 'DESC']);
                 },
                 'Prefectures', 
                 'CustomerMetrics',

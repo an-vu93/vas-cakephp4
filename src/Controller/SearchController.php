@@ -195,6 +195,8 @@ class SearchController extends AppController
             'URL',
             '都道府県',
             '住所',
+            '電話番号',
+            '商品種別',
             '従業員数',
             '資本金',
             '年商',
@@ -256,7 +258,6 @@ class SearchController extends AppController
                     $moreRecords = false;
                     continue;
                 }
-
                 foreach ($batch as $customer) {
                     $row = [
                         $customer->id,
@@ -264,6 +265,8 @@ class SearchController extends AppController
                         $customer->customer_profile->homepage,
                         $customer->prefecture->name ?? '',
                         $customer->address ?? '',
+                        $customer->tel ?? '',
+                        implode(';', array_map(fn($cp) => $cp->product_type?->short_name ?? '', $customer->customer_products)),
                         $customer->customer_profile->employee_number ?? '',
                         $customer->customer_profile->capital ?? '',
                         $customer->customer_profile->revene ?? '',
