@@ -2,19 +2,20 @@
 
 # Set MySQL credentials
 DB_USER="root"
-DB_NAME="vasdatabase_2"
+DB_NAME="vasdatabase_production_20250925"
 DB_HOST="localhost"  
 
-mysql "$DB_HOST" -u "$DB_USER" -p "$DB_NAME" << EOF
+mysql -u "$DB_USER" -p "$DB_NAME" << EOF
 SET SESSION sql_mode = REPLACE(@@sql_mode, 'STRICT_TRANS_TABLES', '');
 SET SESSION sql_mode = REPLACE(@@sql_mode, 'NO_ZERO_DATE', '');
 
-INSERT INTO customers (id, name, postal_code, address, own_flg, support_remarks, support_memo, outgoing_flg, remarks, relationship, cs_staff_id, replace_proposal_flg, be_carefull_remarks, sfa_customer_id)
+INSERT INTO customers (id, name, postal_code, address, tel, own_flg, support_remarks, support_memo, outgoing_flg, remarks, relationship, cs_staff_id, replace_proposal_flg, be_carefull_remarks, sfa_customer_id)
 SELECT 
     tmp.id, 
     tmp.name AS name, 
     tmp.post AS postal_code, 
     tmp.address AS address, 
+    tmp.tel AS tel, 
     tmp.own_flg AS own_flg, 
     tmp.support_remarks AS support_remarks, 
     tmp.support_memo AS support_memo, 
@@ -31,6 +32,7 @@ ON DUPLICATE KEY UPDATE
     name = VALUES(name),
     postal_code = VALUES(postal_code),
     address = VALUES(address),
+    tel = VALUES(tel),
     own_flg = VALUES(own_flg),
     support_remarks = VALUES(support_remarks),
     support_memo = VALUES(support_memo),
@@ -40,7 +42,7 @@ ON DUPLICATE KEY UPDATE
     cs_staff_id = VALUES(cs_staff_id),
     replace_proposal_flg = VALUES(replace_proposal_flg),
     be_carefull_remarks = VALUES(be_carefull_remarks),
-    sfa_customer_id = VALUES(sfa_customer_id)
+    sfa_customer_id = VALUES(sfa_customer_id);
 
 
 INSERT INTO customer_profiles (customer_id, prefecture_id) 
@@ -120,7 +122,7 @@ INSERT INTO customer_contacts (id, parent_id, customer_id, call_type, rating, re
 SELECT id, parent_id, c_id, call_type, rating, reception_subject, reception_date_write
 FROM tmp_contacts;
 
-// Update metric values
+/* Update metric values */
 
 UPDATE customer_metrics cm
 INNER JOIN (
@@ -159,7 +161,7 @@ INNER JOIN (
 ) derived_table
 ON cm.customer_id = derived_table.customer_id
 SET 
-    cm.oricoh_license_count = derived_table.oricoh_license_count
+    cm.oricoh_license_count = derived_table.oricoh_license_count;
 
 UPDATE customer_metrics cm
 INNER JOIN (
@@ -177,7 +179,7 @@ INNER JOIN (
 ) derived_table
 ON cm.customer_id = derived_table.customer_id
 SET 
-    cm.other_license_count = derived_table.other_license_count
+    cm.other_license_count = derived_table.other_license_count;
 
 
 UPDATE customer_metrics cm
@@ -196,7 +198,7 @@ INNER JOIN (
 ) derived_table
 ON cm.customer_id = derived_table.customer_id
 SET 
-    cm.other_license_count = derived_table.other_license_count
+    cm.other_license_count = derived_table.other_license_count;
 
 
 UPDATE customer_metrics cm
@@ -210,7 +212,7 @@ INNER JOIN (
 ) derived_table
 ON cm.customer_id = derived_table.customer_id
 SET 
-    cm.in_contact_count = derived_table.in_contact_count
+    cm.in_contact_count = derived_table.in_contact_count;
 
 
 UPDATE customer_metrics cm
@@ -224,7 +226,7 @@ INNER JOIN (
 ) derived_table
 ON cm.customer_id = derived_table.customer_id
 SET 
-    cm.out_contact_count = derived_table.out_contact_count
+    cm.out_contact_count = derived_table.out_contact_count;
 
 
 UPDATE customer_metrics cm
@@ -264,7 +266,7 @@ INNER JOIN (
 SELECT cp.customer_id, SUM(d.week_login_cnt) week_login_count, SUM(d.week_edit_cnt) week_edit_count
 FROM customers c
 INNER JOIN customer_products cp ON cp.customer_id = c.id 
-INNER JOIN dashboard_datas d ON d.goods_id = cp.id  
+INNER JOIN dev_dashboard_datas d ON d.goods_id = cp.id  
 GROUP BY c.id
 ) jtb ON jtb.customer_id = cm.customer_id
 SET cm.week_login_count = jtb.week_login_count, cm.week_edit_count = jtb.week_edit_count;
@@ -276,15 +278,68 @@ FROM customers c
 INNER JOIN customer_orders co ON co.customer_id = c.id
 GROUP BY c.id
 ) jtb ON jtb.customer_id = cm.customer_id
-SET cm.all_order_amount = jtb.all_order_amount
+SET cm.all_order_amount = jtb.all_order_amount;
 
 UPDATE customer_metrics cm
 INNER JOIN customers c ON c.id = cm.customer_id
 SET cm.relationship_strength = c.relationship;
 
-DROP TABLE tmp_customers;
-DROP TABLE tmp_goods;
-DROP TABLE tmp_services;
-DROP TABLE tmp_projects;
-DROP TABLE tmp_contacts;
+UPDATE customer_metrics cm
+JOIN (
+    SELECT 
+        cm.customer_id,
+        SUM(view_tmp.avg_pageview) AS total_avg_pageview
+    FROM customer_metrics cm
+    INNER JOIN (
+        SELECT 
+            dc.c_id,
+            dmd_tmp.avg_pageview
+        FROM dev_clients dc
+        INNER JOIN (
+            SELECT 
+                dmd.goods_id,
+                ROUND(AVG(dmd.page_view)) AS avg_pageview
+            FROM dev_monthly_datas dmd
+            GROUP BY dmd.goods_id
+        ) dmd_tmp 
+            ON dmd_tmp.goods_id = dc.goods_id
+    ) view_tmp 
+        ON view_tmp.c_id = cm.customer_id
+    GROUP BY cm.customer_id
+) AS agg
+    ON cm.customer_id = agg.customer_id
+SET cm.page_view_count = agg.total_avg_pageview;
+
+UPDATE customer_metrics cm
+JOIN (
+    SELECT 
+        cm.customer_id,
+        SUM(form_tmp.avg_form_count) AS total_avg_form_count
+    FROM customer_metrics cm
+    INNER JOIN (
+        SELECT 
+            dc.c_id,
+            dfd_tmp.avg_form_count
+        FROM dev_clients dc
+        INNER JOIN (
+            SELECT 
+                dfd.goods_id,
+                ROUND(AVG(dfd.count)) AS avg_form_count
+            FROM dev_form_datas dfd
+            GROUP BY dfd.goods_id
+        ) dfd_tmp 
+            ON dfd_tmp.goods_id = dc.goods_id
+    ) form_tmp 
+        ON form_tmp.c_id = cm.customer_id
+    GROUP BY cm.customer_id
+) AS agg
+    ON cm.customer_id = agg.customer_id
+SET cm.form_inquiry_count = agg.total_avg_form_count;
+
 EOF
+
+# DROP TABLE tmp_customers;
+# DROP TABLE tmp_goods;
+# DROP TABLE tmp_services;
+# DROP TABLE tmp_projects;
+# DROP TABLE tmp_contacts;

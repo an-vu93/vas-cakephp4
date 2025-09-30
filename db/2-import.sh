@@ -2,7 +2,7 @@
 
 # Set MySQL credentials
 DB_USER="root"
-DB_NAME="vasdatabase_2"
+DB_NAME="vasdatabase_production_20250925"
 DB_HOST="localhost"  
 
 # Loop through all .sql files in the current directory
