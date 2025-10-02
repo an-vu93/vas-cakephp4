@@ -336,6 +336,19 @@ JOIN (
     ON cm.customer_id = agg.customer_id
 SET cm.form_inquiry_count = agg.total_avg_form_count;
 
+UPDATE customer_metrics cm
+JOIN (
+    SELECT 
+        dc.c_id AS customer_id,
+        MAX(ddd.last_edit_date) AS last_edit_date
+    FROM dev_clients dc
+    INNER JOIN dev_dashboard_datas ddd 
+        ON dc.id = ddd.client_id
+    WHERE dc.own_flg = 0
+    GROUP BY dc.c_id
+) tmp ON cm.customer_id = tmp.customer_id
+SET cm.last_edit_date = tmp.last_edit_date;
+
 EOF
 
 # DROP TABLE tmp_customers;
